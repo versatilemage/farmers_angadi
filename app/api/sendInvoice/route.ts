@@ -5,7 +5,7 @@ import fs from "fs";
 import path from "path";
 
 export async function POST(req) {
-  const { producerEmail, consumerEmail, paymentId } = await req.json();
+    const { itemsByProducer, consumerEmail, consumerName, paymentId, allProductNames } = await req.json();
 
   try {
     const transporter = nodemailer.createTransport({
@@ -15,29 +15,35 @@ export async function POST(req) {
         pass: "fleh qyzm jmqi umfl"
       },
     });
-    console.log(producerEmail,consumerEmail,"kklh");
     
     const filePath = path.join(process.cwd(), "invoices", `invoice_${paymentId}.pdf`);
     const attachment = fs.readFileSync(filePath);
 
-    const producerMailOptions = {
-      from: "asolinmaso22@gmail.com",
-      to: producerEmail,
-      subject: "Your product(s) have been purchased!",
-      text: "These Products are sold successfully",
-      attachments: [
-        {
-          filename: `invoice_${paymentId}.pdf`,
-          content: attachment,
-        },
-      ],
-    };
-
-    const consumerMailOptions = {
-        from: "asolinmaso22@gmail.com",
-        to:  consumerEmail,
-        subject: "Purchase Invoice",
-        text: "Thank you for your purchase. Please find attached the invoice.",
+    for (const producerId in itemsByProducer) {
+        const { producerEmail, items } = itemsByProducer[producerId];
+  
+        const producerMailOptions = {
+          from: process.env.EMAIL_USERNAME,
+          to: producerEmail,
+          subject: "Your products have been purchased!",
+          text: `Congratulations! The following items were purchased by ${consumerName}: ${items.join(", ")}.`,
+          attachments: [
+            {
+              filename: `invoice_${paymentId}.pdf`,
+              content: attachment,
+            },
+          ],
+        };
+  
+        await transporter.sendMail(producerMailOptions);
+      }
+  
+      // Send a single email to the consumer with all products
+      const consumerMailOptions = {
+        from: process.env.EMAIL_USERNAME,
+        to: consumerEmail,
+        subject: "Your purchase was successfully placed!",
+        text: `Thank you for your purchase, ${consumerName}! Your order includes: ${allProductNames.join(", ")}.`,
         attachments: [
           {
             filename: `invoice_${paymentId}.pdf`,
@@ -45,8 +51,7 @@ export async function POST(req) {
           },
         ],
       };
-
-      await transporter.sendMail(producerMailOptions);
+  
       await transporter.sendMail(consumerMailOptions);
     return NextResponse.json({ message: "Invoice sent successfully" });
   } catch (error) {

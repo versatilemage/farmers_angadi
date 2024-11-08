@@ -125,16 +125,26 @@ const CartOrganelles = () => {
             cartItems: cartItems,
             totalAmount: totalCartAmount,
           });
-          console.log(cartItems[0],"olan");
-          
-          const producerEmail = cartItems[0].productDetails.creatorDetails.email;
-          const consumerEmail = session.user.email;
+          const itemsByProducer = cartItems.reduce((acc, item) => {
+            const creatorId = item.productDetails.creatorDetails._id.toString();
+            if (!acc[creatorId]) {
+              acc[creatorId] = { producerEmail: item.productDetails.creatorDetails.email, items: [] };
+            }
+            acc[creatorId].items.push(item.productDetails.name);
+            return acc;
+          }, {});
   
-          // Send the PDF to both producer and consumer
+          const consumerEmail = session.user.email;
+          const consumerName = session.user.username;
+          const allProductNames = cartItems.map((item) => item.productDetails.name);
+  
+          // Send email with customized messages
           await axios.post("/api/sendInvoice", {
-            producerEmail,
+            itemsByProducer,
             consumerEmail,
+            consumerName,
             paymentId: response.razorpay_payment_id,
+            allProductNames,
           });
   
           // Refresh cart data
