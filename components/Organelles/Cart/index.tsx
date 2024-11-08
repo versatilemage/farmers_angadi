@@ -81,25 +81,15 @@ const CartOrganelles = () => {
   };
 
   const onCheckout = async () => {
-      
     if (!cartItems.length) {
-      Swal.fire({
-        icon: "error",
-        text: "Your cart is empty.",
-        timer: 3000,
-      });
+      Swal.fire({ icon: "error", text: "Your cart is empty.", timer: 3000 });
       return;
     }
   
     try {
       const res = await loadRazorpayScript();
-  
       if (!res) {
-        Swal.fire({
-          icon: "error",
-          text: "Razorpay SDK failed to load. Are you online?",
-          timer: 3000,
-        });
+        Swal.fire({ icon: "error", text: "Razorpay SDK failed to load.", timer: 3000 });
         return;
       }
   
@@ -109,19 +99,14 @@ const CartOrganelles = () => {
       });
   
       const { orderId } = response.data;
-  
       if (!orderId) {
-        Swal.fire({
-          icon: "error",
-          text: "Failed to create order. Please try again.",
-          timer: 3000,
-        });
+        Swal.fire({ icon: "error", text: "Failed to create order.", timer: 3000 });
         return;
       }
   
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: totalCartAmount * 100, // Convert amount to paisa
+        amount: totalCartAmount * 100,
         currency: "INR",
         name: "Farmers Angadi",
         description: "Purchase from Angadi Shop",
@@ -132,13 +117,27 @@ const CartOrganelles = () => {
             text: `Payment successful! Payment ID: ${response.razorpay_payment_id}`,
             timer: 3000,
           });
-          await generateInvoicePDF({
+  
+          // Generate the invoice PDF on the server
+          const pdfRes = await axios.post("/api/generateInvoice", {
             userName: session?.user?.username || "Customer",
             paymentId: response.razorpay_payment_id,
             cartItems: cartItems,
             totalAmount: totalCartAmount,
           });
-          // Fetch updated cart data to refresh the view
+          console.log(cartItems[0],"olan");
+          
+          const producerEmail = cartItems[0].productDetails.creatorDetails.email;
+          const consumerEmail = session.user.email;
+  
+          // Send the PDF to both producer and consumer
+          await axios.post("/api/sendInvoice", {
+            producerEmail,
+            consumerEmail,
+            paymentId: response.razorpay_payment_id,
+          });
+  
+          // Refresh cart data
           fetchData();
         },
         prefill: {
@@ -146,9 +145,7 @@ const CartOrganelles = () => {
           email: session?.user?.email || "email@example.com",
           contact: "8220158319",
         },
-        theme: {
-          color: "#3399cc",
-        },
+        theme: { color: "#3399cc" },
       };
   
       const paymentObject = new window.Razorpay(options);
@@ -157,14 +154,13 @@ const CartOrganelles = () => {
       console.error("Checkout error:", error);
       Swal.fire({
         icon: "error",
-        text: "Something went wrong during the checkout process.",
+        text: "Something went wrong during checkout.",
         timer: 3000,
       });
     }
   };
   
   
-
   return (
     <div className="flex flex-col items-center w-full h-full">
       <div className="flex items-center flex-col max-w-[1280px] w-full h-full p-6 gap-10">

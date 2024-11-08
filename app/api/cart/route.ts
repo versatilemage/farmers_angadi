@@ -22,11 +22,11 @@ export async function DELETE(req: NextRequest) {
 }
 
 // Fetch cart items
+// Fetch cart items
 export async function getCartItems(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get("userId");
   const isAdmin = searchParams.get("admin") === "true"; // Check if admin access
-  console.log(isAdmin,"lo");
   
   await connectMongo();
 
@@ -36,49 +36,61 @@ export async function getCartItems(req: NextRequest) {
       ? {} // No specific user ID; fetch for all users
       : { userId: new mongoose.Types.ObjectId(userId) };
 
-      const cartItems = await CartModel.aggregate([
-        { $match: matchStage },
-        {
-          $lookup: {
-            from: "products", // Exact MongoDB collection name for products
-            localField: "productId",
-            foreignField: "_id",
-            as: "productDetails",
-          },
-        },
-        { $unwind: "$productDetails" },
-        {
-          $lookup: {
-            from: "productstocks", // Exact MongoDB collection name for product stocks
-            localField: "productDetails._id",
-            foreignField: "productId",
-            as: "stockData",
-          },
-        },
-        {
-          $unwind: {
-            path: "$stockData",
-            preserveNullAndEmptyArrays: true,
-          },
-        },
-        {
+    const cartItems = await CartModel.aggregate([
+      { $match: matchStage },
+      {
         $lookup: {
-          from: "minimumuserdatas", // Match with the 'MinimumUsertModel' collection name
+          from: "products", // Exact MongoDB collection name for products
+          localField: "productId",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      { $unwind: "$productDetails" },
+      {
+        $lookup: {
+          from: "productstocks", // Exact MongoDB collection name for product stocks
+          localField: "productDetails._id",
+          foreignField: "productId",
+          as: "stockData",
+        },
+      },
+      {
+        $unwind: {
+          path: "$stockData",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "minimumuserdatas", // Ensure this matches the correct user model collection
           localField: "userId",
           foreignField: "_id",
           as: "userDetails",
         },
       },
       { $unwind: "$userDetails" },
-      ]);
-      console.log(cartItems); // Check if products are being populated
-      return NextResponse.json({ items: cartItems });
+      // Additional lookup to populate creator details in productDetails
+      {
+        $lookup: {
+          from: "minimumuserdatas", // Collection containing creator info
+          localField: "productDetails.creatorId",
+          foreignField: "_id",
+          as: "productDetails.creatorDetails",
+        },
+      },
+      { $unwind: "$productDetails.creatorDetails" }, // Flatten the populated creator details
+    ]);
+
+    console.log(cartItems); // Check if products are being populated
+    return NextResponse.json({ items: cartItems });
 
   } catch (error) {
     console.error("Error fetching cart items:", error);
     return NextResponse.json({ error: "Failed to fetch cart items" }, { status: 500 });
   }
 }
+
 // Add item to cart or increment if already exists
 async function addToCart(req: NextRequest) {
   await connectMongo();
