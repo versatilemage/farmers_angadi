@@ -197,15 +197,16 @@ export async function PATCH(req: Request) {
       discount: formData.get("discount") ? parseFloat(formData.get("discount") as string) : existingProduct.discount,
       about: formData.get("about") || existingProduct.about,
       category: formData.get("category") || existingProduct.category,
+      image: existingProduct.image, // Set the current image by default
     };
 
     // Check if a new image file is provided
     const imageFile = formData.get("image") as File;
-    if (imageFile) {
+
+    // Upload new image only if a non-empty file is provided
+    if (imageFile && imageFile.size > 0) {
       const imageUrl = await uploadFileToS3(imageFile);
-      updates.image = imageUrl; // Use the new image URL if provided
-    } else {
-      updates.image = existingProduct.image; // Retain the current image URL if no new image is uploaded
+      updates.image = imageUrl; // Update with new image URL if a new image is provided
     }
 
     // Handle stock data update if provided

@@ -82,16 +82,9 @@ const LoginForm = () => {
             className="w-full h-14 pl-12 pr-4 border rounded-lg focus:ring-2 focus:ring-secondary"
             placeholder="Enter Email / Username"
           />
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400"
-            viewBox="0 0 24 24"
-          >
-            <path
-              fill="currentColor"
-              d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm-10 2a4 4 0 0 1 4 4H6a4 4 0 0 1 4-4zm0 10H6v-2h4v2zm8-2h-4v2h4v-2zm-8-4H6v-2h4v2zm8 0h-4v-2h4v2z"
-            />
-          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" className="absolute left-4 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400"
+            viewBox="0 0 24 24"><path fill="currentColor" d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2zm-2 0l-8 5l-8-5zm0 12H4V8l8 5l8-5z" /></svg>
+
         </div>
 
         <div className="relative">
@@ -103,30 +96,18 @@ const LoginForm = () => {
             className="w-full h-14 pl-12 pr-4 border rounded-lg focus:ring-2 focus:ring-secondary"
             placeholder="Enter Password"
           />
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400"
-            viewBox="0 0 24 24"
-            onClick={() => setShowPassword(!showPassword)}
-            role="button"
-          >
-            <path
-              fill="currentColor"
-              d={`${
-                showPassword
-                  ? "M12 19a7 7 0 1 0 0-14a7 7 0 0 0 0 14z"
-                  : "M12 5c4.074 0 7.38 2.443 8.919 6C17.38 16.557 14.074 19 12 19s-5.38-2.443-6.919-6C6.62 7.443 9.926 5 12 5z"
-              }`}
-            />
-          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" className="absolute cursor-pointer left-4 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400"
+            viewBox="0 0 24 24" onClick={() => setShowPassword(!showPassword)}
+          ><path fill="currentColor"  d={`${!showPassword
+            ?"M12 9a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5a5 5 0 0 1 5-5a5 5 0 0 1 5 5a5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5":"m3.282 21.782l4.278-4.278M21.782 3.282L17.673 7.39m-3.363 3.363a2.64 2.64 0 0 0-1.063-1.063a2.625 2.625 0 1 0-2.494 4.62m3.557-3.557l-3.557 3.557m3.557-3.557l3.363-3.363m-6.92 6.92L7.56 17.504M17.673 7.39c-.38-.319-.791-.621-1.232-.894C15.2 5.726 13.717 5.19 12 5.19c-4.956 0-7.948 4.459-8.91 6.16c-.11.196-.165.293-.197.446a1.2 1.2 0 0 0 0 .408c.032.152.088.25.198.445c.51.903 1.593 2.582 3.237 3.96c.38.319.791.621 1.232.895m12.18-7.925c.528.694.919 1.328 1.17 1.773c.11.194.165.292.197.444c.023.112.023.296 0 .408c-.032.152-.087.25-.197.444c-.96 1.702-3.95 6.162-8.91 6.162q-.714-.002-1.374-.117"}$`}/></svg>
+
         </div>
 
         <button
-          className={`w-full h-14 rounded-lg font-semibold ${
-            disabled
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-primary hover:bg-secondary text-white transition"
-          }`}
+          className={`w-full h-14 rounded-lg font-semibold ${disabled
+            ? "bg-gray-300 cursor-not-allowed"
+            : "bg-primary hover:bg-secondary text-white transition"
+            }`}
           onClick={onSubmit}
           disabled={disabled}
         >

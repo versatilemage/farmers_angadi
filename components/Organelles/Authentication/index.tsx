@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from 'next/navigation';
 
-import AUthImage from "@/public/assets/authentication.jpg";
+import AuthImage from "@/public/assets/authentication.jpg";
 import LoginForm from "@/components/Molecules/Login";
 import SignupForm from "@/components/Molecules/Signup";
 
@@ -18,7 +18,7 @@ const search = searchParams.get('page')
       <section className="flex flex-row items-center justify-center xl:w-10/12 w-full bg-[#5BA36B] h-5/6 max-w-[1280px] max-h-[800px] xl:rounded-lg">
         <div className="w-2/4 text-center md:block hidden h-full">
           <Image
-            src={AUthImage}
+            src={AuthImage}
             alt="no image"
             width={1000}
             height={1000}

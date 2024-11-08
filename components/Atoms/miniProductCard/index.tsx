@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import EditProductForm from "@/app/producers/EditProduct/index";
 
-const MiniProductCard = ({ data, isCreator }) => {
+const MiniProductCard = ({ data, isCreator,refreshProducts  }) => {
   const [isEditing, setIsEditing] = useState(false);
 
   // Calculate final price and discount percentage
@@ -22,7 +22,7 @@ const MiniProductCard = ({ data, isCreator }) => {
       {isCreator && (
         <button
           onClick={() => setIsEditing(true)} // Toggle editing mode on button click
-          className="absolute top-2 right-2 p-1 text-black z-50 hover:text-gray-700 bg-yellow-500 rounded"
+          className="absolute top-2 right-2 p-1 text-white z-10 hover:text-white bg-blue-500 rounded"
         >
           <FaPencilAlt />
         </button>
@@ -54,7 +54,7 @@ const MiniProductCard = ({ data, isCreator }) => {
 
       {/* Render Edit Form as Modal */}
       {isEditing && (
-        <EditProductForm productId={data._id} onClose={() => setIsEditing(false)} />
+        <EditProductForm productId={data._id} onClose={() => { setIsEditing(false); refreshProducts(); }} />
       )}
     </div>
   );

@@ -11,26 +11,20 @@ const IndividualCartProductCard = ({
   changedData,
   setChangedData,
   toDelete,
-  onItemCountChange
+  onItemCountChange,
 }: {
   items: CartItemInterface;
   changeIfEditted: Dispatch<SetStateAction<boolean>>;
   changedData: CartItemInterface[];
   setChangedData: Dispatch<SetStateAction<CartItemInterface[]>>;
   toDelete: Dispatch<SetStateAction<boolean>>;
-  onItemCountChange: (updatedItem: CartItemInterface) => void; // Define the type
-
+  onItemCountChange: (updatedItem: CartItemInterface) => void;
 }) => {
   const [productCount, setProductCount] = useState(items.productCount);
+  const [availableStock, setAvailableStock] = useState(items.stockData.stock); // Track available stock
 
-  // Access product and stock details from the cart item
   const product = items.productDetails;
-  const stockData = items.stockData;
-
-  const productCost = (
-    (product.cost - product.discount) *
-    productCount
-  ).toFixed(2);
+  const productCost = ((product.cost - product.discount) * productCount).toFixed(2);
 
   const updateCartCount = async (newCount: number) => {
     try {
@@ -39,9 +33,8 @@ const IndividualCartProductCard = ({
         productCount: newCount,
         status: "CART",
       });
-      setProductCount(newCount); 
+      setProductCount(newCount);
       changeIfEditted(true);
-
     } catch (error) {
       console.error("Error updating cart count:", error);
       Swal.fire({
@@ -53,13 +46,12 @@ const IndividualCartProductCard = ({
   };
 
   const incrementProductCount = () => {
-    if (productCount < 99 && productCount < stockData.stock) {
-      // Ensure we don't exceed stock
+    if (productCount < 99 && productCount < availableStock) {
       const newCount = productCount + 1;
       setProductCount(newCount);
+      setAvailableStock(availableStock - 1); // Decrease available stock
       updateCartCount(newCount);
       onItemCountChange({ ...items, productCount: newCount });
-
     }
   };
 
@@ -67,9 +59,9 @@ const IndividualCartProductCard = ({
     if (productCount > 1) {
       const newCount = productCount - 1;
       setProductCount(newCount);
+      setAvailableStock(availableStock + 1); // Increase available stock
       updateCartCount(newCount);
       onItemCountChange({ ...items, productCount: newCount });
-
     } else {
       deleteItemsFromCart(items._id);
     }
@@ -97,7 +89,7 @@ const IndividualCartProductCard = ({
   };
 
   useEffect(() => {
-    const addedValueItems = {
+    const updatedCartItem = {
       ...items,
       productCount,
       totalPrice: Number(productCost),
@@ -105,22 +97,19 @@ const IndividualCartProductCard = ({
 
     if (items.productCount !== productCount && productCount > 0) {
       changeIfEditted(true);
-      const toModifyChangedData = changedData.map((ele) => {
-        if (items._id === ele._id) {
-          return addedValueItems;
-        } else {
-          return ele;
-        }
-      });
+      const updatedChangedData = changedData.map((item) => 
+        item._id === items._id ? updatedCartItem : item
+      );
+
       if (!changedData.length) {
-        setChangedData([addedValueItems]);
+        setChangedData([updatedCartItem]);
       } else {
-        setChangedData([...toModifyChangedData]);
+        setChangedData([...updatedChangedData]);
       }
     } else {
       changeIfEditted(false);
-      const toRemoveData = changedData.filter((i) => i._id !== items._id);
-      setChangedData(toRemoveData);
+      const remainingData = changedData.filter((item) => item._id !== items._id);
+      setChangedData(remainingData);
     }
   }, [productCount]);
 
@@ -130,10 +119,10 @@ const IndividualCartProductCard = ({
         <Image
           src={product.image}
           alt={product.name}
-          className="w-24 h-24"
-          width={24}
-          height={24}
+          width={96}
+          height={96}
           quality={100}
+          className="w-24 h-24 rounded"
         />
         <div className="flex justify-between items-center w-full h-full">
           <div className="flex flex-col items-start gap-2">
@@ -164,7 +153,7 @@ const IndividualCartProductCard = ({
               </button>
               <p>{product.measurement}</p>
             </div>
-            {stockData?.stock > productCount ? (
+            {availableStock > 0 ? (
               <span className="flex gap-1 items-center mt-3">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -177,7 +166,7 @@ const IndividualCartProductCard = ({
                     d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10s10-4.5 10-10S17.5 2 12 2m-2 15l-5-5l1.41-1.41L10 14.17l7.59-7.59L19 8z"
                   />
                 </svg>
-                <p className="text-sm">In stock ({stockData.stock})</p>
+                <p className="text-sm">In stock ({availableStock})</p>
               </span>
             ) : (
               <span className="flex gap-1 items-center mt-3">
@@ -211,9 +200,9 @@ const IndividualCartProductCard = ({
                 <path
                   fill="none"
                   stroke="red"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
                   d="m18 9l-.84 8.398c-.127 1.273-.19 1.909-.48 2.39a2.5 2.5 0 0 1-1.075.973C15.098 21 14.46 21 13.18 21h-2.36c-1.279 0-1.918 0-2.425-.24a2.5 2.5 0 0 1-1.076-.973c-.288-.48-.352-1.116-.48-2.389L6 9m7.5 6.5v-5m-3 5v-5m-6-4h4.615m0 0l.386-2.672c.112-.486.516-.828.98-.828h3.038c.464 0 .867.342.98.828l.386 2.672m-5.77 0h5.77m0 0H19.5"
                 />
               </svg>{" "}

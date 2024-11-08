@@ -14,7 +14,7 @@ const EditProductForm = ({ productId, onClose }: { productId: string; onClose: (
         const response = await fetch(`/api/product?productId=${productId}`);
         const data = await response.json();
         setProduct(data.data);
-        setPreviewImage(data.data.image);
+        setPreviewImage(data.data.image); // Set current image as preview
       } catch (error) {
         console.error("Error fetching product data:", error);
       }
@@ -25,8 +25,8 @@ const EditProductForm = ({ productId, onClose }: { productId: string; onClose: (
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setNewImage(file);
-      setPreviewImage(URL.createObjectURL(file));
+      setNewImage(file); // Set new image if one is selected
+      setPreviewImage(URL.createObjectURL(file)); // Update preview to selected image
     }
   };
 
@@ -36,8 +36,12 @@ const EditProductForm = ({ productId, onClose }: { productId: string; onClose: (
 
     const formData = new FormData(event.currentTarget);
     formData.append("productId", productId);
+
+    // Check if a new image is selected; if not, add the existing image URL
     if (newImage) {
-      formData.append("image", newImage);
+      formData.append("image", newImage); // Add new image if selected
+    } else if (previewImage) {
+      formData.append("existingImageUrl", previewImage); // Use the existing image URL
     }
 
     try {
@@ -50,7 +54,7 @@ const EditProductForm = ({ productId, onClose }: { productId: string; onClose: (
 
       if (response.ok) {
         setMessage("Product updated successfully!");
-        onClose();
+        onClose(); // Close the form
       } else {
         setMessage(`Error: ${data.message}`);
       }
@@ -69,14 +73,12 @@ const EditProductForm = ({ productId, onClose }: { productId: string; onClose: (
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-white rounded-xl shadow-lg w-full max-w-md h-[80vh] overflow-hidden relative transition-transform transform-gpu scale-95 hover:scale-100 duration-200 ease-out">
-        {/* Close Button */}
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 text-lg">
           ✕
         </button>
 
         <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">Edit Product</h2>
 
-        {/* Scrollable Form */}
         <form onSubmit={onSubmit} className="px-6 pb-14 overflow-y-auto h-full space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-600">Product Name</label>
@@ -161,7 +163,6 @@ const EditProductForm = ({ productId, onClose }: { productId: string; onClose: (
             ></textarea>
           </div>
 
-          {/* Submit Button and Message */}
           <div className="pt-4 border-t border-gray-200">
             <button
               type="submit"

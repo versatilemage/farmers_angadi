@@ -15,7 +15,7 @@ const SearchedDataListed = ({
   const [matchedData, setMatchedData] = useState<productOnlyInterface[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [debouncedFetch] = useState<TimedTask>(debounce(1000));
-
+  
   const searchedProductsLists = useCallback(async () => {
     setLoading(true); // Start loading
     try {
@@ -97,7 +97,7 @@ const SearchedDataListed = ({
                     {product.name}
                   </div>
                   <div className="col-span-3 text-lg font-normal text-end flex items-end justify-end sm:px-6">
-                    ₹ {product.cost} per Kg
+                    ₹ {product.cost-product?.discount} per Kg
                   </div>
                 </div>
               </Link>

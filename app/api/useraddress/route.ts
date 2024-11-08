@@ -1,57 +1,46 @@
-import { NextRequest, NextResponse } from "next/server";
+import UserAddressModel from "@/models/useraddress";
 import connectMongo from "@/utils/Database";
-import { ObjectId } from "mongodb";
+import { NextResponse } from "next/server";
 
-export async function POST(req: NextRequest) {
+export async function GET(request: Request) {
+    await connectMongo();
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get("userId");
+
+    if (!userId) {
+        return NextResponse.json({ message: "User ID is required" }, { status: 400 });
+    }
+
     try {
-
-    } catch (err) {
-        console.error("err", err);
-        return NextResponse.json({ message: "something went wrong", status: 500 }); 
+        const address = await UserAddressModel.find({ userId });
+        return NextResponse.json(address || {});
+    } catch (error) {
+        return NextResponse.json({ message: "Error fetching address", error }, { status: 500 });
     }
 }
 
-export async function GET(req: NextRequest) {
+export async function POST(request: Request) {
+    await connectMongo();
+    const { userId, doorNumber, contactInfo, street, village, city, state, country, pinNumber } = await request.json();
 
-    const url = new URL(req.url);
-    const searchParams = new URLSearchParams(url.search);
-    const userId = searchParams.get("userId");
-
-    try {
-
-    } catch (err) {
-        console.error("err", err);
-        return NextResponse.json({ message: "something went wrong", status: 500 }); 
+    if (!userId) {
+        return NextResponse.json({ message: "User ID is required" }, { status: 400 });
     }
 
-}
-
-export async function PUT(req: NextRequest) {
-
-    const url = new URL(req.url);
-    const searchParams = new URLSearchParams(url.search);
-    const userId = searchParams.get("userId");
-
     try {
-
-    } catch (err) {
-        console.error("err", err);
-        return NextResponse.json({ message: "something went wrong", status: 500 }); 
+        const newAddress = await UserAddressModel.create({
+            userId,
+            doorNumber,
+            contactInfo,
+            street,
+            village,
+            city,
+            state,
+            country,
+            pinNumber,
+        });
+        return NextResponse.json(newAddress);
+    } catch (error) {
+        return NextResponse.json({ message: "Error saving address", error }, { status: 500 });
     }
-
-}
-
-export async function DELETE(req: NextRequest) {
-
-    const url = new URL(req.url);
-    const searchParams = new URLSearchParams(url.search);
-    const userId = searchParams.get("userId");
-
-    try {
-
-    } catch (err) {
-        console.error("err", err);
-        return NextResponse.json({ message: "something went wrong", status: 500 }); 
-    }
-
 }

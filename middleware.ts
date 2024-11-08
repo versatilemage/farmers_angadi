@@ -4,8 +4,8 @@ import { JWT } from "next-auth/jwt"; // Import the JWT type from next-auth
 
 // Define roles required for specific routes
 const protectedRoutes = {
-  "/producers": ["Producers"], // All routes under /producers require the Producers role
-  "/admin": ["admin"], // All routes under /admin require the admin role
+  "/producers": ["Producers", "Admin"], // Allow both Producers and Admin roles
+  "/admin": ["Admin"], // Only allow Admin role for /admin
 };
 
 export async function middleware(request: NextRequest, event: NextFetchEvent) {
@@ -21,11 +21,14 @@ export async function middleware(request: NextRequest, event: NextFetchEvent) {
         return NextResponse.redirect(new URL("/authentication", request.url));
       }
 
-      // Extract the user role from the token
-      const userRole = token.role as string | undefined;
+      // Extract the user role from the token and convert to lowercase for consistent comparison
+      const userRole = (token.role as string | undefined)?.toLowerCase();
+
+      // Check if any required role (normalized to lowercase) matches the user's role
+      const hasAccess = roles.some((role) => role.toLowerCase() === userRole);
 
       // If the user is authenticated but has an incorrect role, redirect to the home page
-      if (!userRole || !roles.includes(userRole)) {
+      if (!userRole || !hasAccess) {
         return NextResponse.redirect(new URL("/", request.url));
       }
 

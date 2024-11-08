@@ -26,7 +26,8 @@ export async function getCartItems(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get("userId");
   const isAdmin = searchParams.get("admin") === "true"; // Check if admin access
-
+  console.log(isAdmin,"lo");
+  
   await connectMongo();
 
   try {

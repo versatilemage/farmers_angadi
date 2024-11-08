@@ -12,28 +12,28 @@ const AllCategoryListed = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true); // Trigger loading state on category change
-      try {
-        const url =
-          selectedCategory && selectedCategory !== "All"
-            ? `/api/product?category=${selectedCategory}`
-            : "/api/product";
-        const response = await axios.get(url);
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const url =
+        selectedCategory && selectedCategory !== "All"
+          ? `/api/product?category=${selectedCategory}`
+          : "/api/product";
+      const response = await axios.get(url);
 
-        if (response.data && response.data.data) {
-          setProductData(response.data.data);
-        } else {
-          setProductData([]);
-        }
-      } catch (error) {
-        console.error("Error fetching product data:", error);
-      } finally {
-        setLoading(false); // Disable loading once fetch is complete
+      if (response.data && response.data.data) {
+        setProductData(response.data.data);
+      } else {
+        setProductData([]);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching product data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchProducts();
   }, [selectedCategory]);
 
@@ -89,10 +89,11 @@ const AllCategoryListed = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                   {products.map((product) => (
                     <div key={product._id} className="flex flex-col gap-6">
-                      <MiniProductCard
-                        data={product}
-                        isCreator={product.creatorId === currentUserId}
-                      />
+                       <MiniProductCard
+                    data={product}
+                    isCreator={product.creatorId === currentUserId}
+                    refreshProducts={fetchProducts} // Pass the function
+                  />
                     </div>
                   ))}
                 </div>
@@ -102,10 +103,12 @@ const AllCategoryListed = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {productData.map((product) => (
                 <div key={product._id} className="flex flex-col gap-6">
-                  <MiniProductCard
+                 <MiniProductCard
                     data={product}
                     isCreator={product.creatorId === currentUserId}
+                    refreshProducts={fetchProducts} // Pass the function
                   />
+          
                 </div>
               ))}
             </div>

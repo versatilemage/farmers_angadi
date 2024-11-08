@@ -13,21 +13,22 @@ export default function AddProduct() {
     if (status === "unauthenticated") {
       console.log("User is unauthenticated, redirecting to /authentication");
       router.push("/authentication");
-    } else if (session && session.user.role !== "Producers") {
-      console.log("User role is not Producers, redirecting to /");
+    } else if (session && session.user.role !== "Producers" && session.user.role !== "admin") {
+      console.log("User role is not Producers or Admin, redirecting to /");
       router.push("/");
     }
-  }, [status, router, session]);
+  }, [status, router, session, session?.user?.role]);
 
   if (status === "loading") {
     return <div>Loading...</div>; // Optional loading state
   }
 
-  if (session && session.user.role === "Producers") {
+  // Allow access to users with "Producers" or "Admin" roles
+  if (session && (session.user.role === "Producers" || session.user.role === "admin")) {
     return (
       <div>
         <CommonNavBar />
-        <AddProductForm /> {/* Producer content */}
+        <AddProductForm /> {/* Producer/Admin content */}
       </div>
     );
   }
