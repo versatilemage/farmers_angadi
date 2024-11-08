@@ -85,27 +85,44 @@ const CommonNavBar = () => {
 
           {/* Location Dropdown */}
           <div className="relative">
-            {isUserAuthenticated && (
-              <div className="flex items-center gap-4 w-[14rem] py-2 px-3 bg-blue-600 text-white rounded-md cursor-pointer" onClick={() => setShowAddressDropdown(!showAddressDropdown)}>
-                <svg width="2.5rem" height="2.5rem" viewBox="0 0 16 16" fill="currentColor">
-                  <path d="M8 0a5 5 0 0 0-5 5c0 5 5 11 5 11s5-6 5-11a5 5 0 0 0-5-5m0 8a3 3 0 1 1 0-6a3 3 0 0 1 0 6"/>
-                </svg>
-                {selectedAddress ? `${selectedAddress?.doorNumber}, ${selectedAddress.street}, ${selectedAddress.city}, ${selectedAddress.pinNumber}` : "Select Location"}
-              </div>
-            )}
-            {showAddressDropdown && (
-              <div className="absolute top-16 left-0 w-48 bg-white shadow-md rounded-md py-2 z-50">
-                {userAddresses.map((address, index) => (
-                  <div key={index} className="px-4 py-2 text-gray-700 cursor-pointer hover:bg-gray-200" onClick={() => handleSelectAddress(address)}>
-                    {address.street}, {address.city}
-                  </div>
-                ))}
-                <div className="px-4 py-2 text-blue-600 cursor-pointer hover:bg-gray-200" onClick={() => router.push("/address/add")}>
-                  Add New Address
-                </div>
-              </div>
-            )}
-          </div>
+  {isUserAuthenticated && (
+    <div
+      className="flex items-center gap-4 w-[14rem] py-2 px-3 bg-green-900 text-white rounded-md cursor-pointer"
+      onClick={() => setShowAddressDropdown(!showAddressDropdown)}
+    >
+      <svg width="2rem" height="2rem" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M8 0a5 5 0 0 0-5 5c0 5 5 11 5 11s5-6 5-11a5 5 0 0 0-5-5m0 8a3 3 0 1 1 0-6a3 3 0 0 1 0 6" />
+      </svg>
+      <div className="truncate-2-lines">
+        {selectedAddress
+          ? `${selectedAddress?.doorNumber}, ${selectedAddress.street}, ${selectedAddress.city}, ${selectedAddress.pinNumber}`
+          : "Select Location"}
+      </div>
+    </div>
+  )}
+  {showAddressDropdown && (
+    <div className="absolute top-16 left-0 w-48 bg-white shadow-lg rounded-lg py-2 z-50">
+      {userAddresses.map((address, index) => (
+        <div
+          key={index}
+          className="px-4 py-2 text-gray-700 cursor-pointer hover:bg-gray-200 truncate-2-lines"
+          onClick={() => handleSelectAddress(address)}
+          title={`${address.street}, ${address.city}`}
+        >
+          {`${address.doorNumber}, ${address.street}, ${address.city},${address.pinNumber}`}
+        </div>
+      ))}
+      <div
+        className="px-4 py-2 text-blue-600 cursor-pointer hover:bg-gray-200"
+        onClick={() => router.push("/address/add")}
+      >
+        Add New Address
+      </div>
+    </div>
+  )}
+</div>
+
+
 
           {/* Navigation Links */}
           <ul className="flex flex-row items-center gap-8 w-full justify-evenly">
