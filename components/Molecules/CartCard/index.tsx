@@ -21,7 +21,7 @@ const IndividualCartProductCard = ({
   onItemCountChange: (updatedItem: CartItemInterface) => void;
 }) => {
   const [productCount, setProductCount] = useState(items.productCount);
-  const [availableStock, setAvailableStock] = useState(items.stockData.stock); // Track available stock
+  const [availableStock, setAvailableStock] = useState(items.stockData.stock- items.productCount); // Track available stock
 
   const product = items.productDetails;
   const productCost = ((product.cost - product.discount) * productCount).toFixed(2);
@@ -34,6 +34,7 @@ const IndividualCartProductCard = ({
         status: "CART",
       });
       setProductCount(newCount);
+      setAvailableStock(items.stockData.stock - newCount); // Update available stock
       changeIfEditted(true);
     } catch (error) {
       console.error("Error updating cart count:", error);
@@ -46,20 +47,22 @@ const IndividualCartProductCard = ({
   };
 
   const incrementProductCount = () => {
-    if (productCount < 99 && productCount < availableStock) {
+    if (productCount < 99 && productCount < items.stockData.stock) {
       const newCount = productCount + 1;
-      setProductCount(newCount);
-      setAvailableStock(availableStock - 1); // Decrease available stock
       updateCartCount(newCount);
       onItemCountChange({ ...items, productCount: newCount });
+    } else {
+      Swal.fire({
+        icon: "error",
+        text: "Stock limit reached!",
+        timer: 2000,
+      });
     }
   };
 
   const decrementOrDeleteItem = () => {
     if (productCount > 1) {
       const newCount = productCount - 1;
-      setProductCount(newCount);
-      setAvailableStock(availableStock + 1); // Increase available stock
       updateCartCount(newCount);
       onItemCountChange({ ...items, productCount: newCount });
     } else {
@@ -87,6 +90,7 @@ const IndividualCartProductCard = ({
       });
     }
   };
+
 
   useEffect(() => {
     const updatedCartItem = {

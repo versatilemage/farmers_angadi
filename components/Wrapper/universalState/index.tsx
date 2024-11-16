@@ -1,15 +1,25 @@
 "use client";
 
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState } from "react";
 
 const AuthContext = createContext(undefined);
 
 export const AuthProvider = ({ children }) => {
-  const [selectedUserData, setSelectedUserdata] = useState(null); // Start with null
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [selectedUserData, setSelectedUserdata] = useState(null); // User data state
+  const [loading, setLoading] = useState(true); // Loading state
+  const [selectedAddress, setSelectedAddress] = useState(null); // Address state
 
   return (
-    <AuthContext.Provider value={{ selectedUserData, setSelectedUserdata, loading, setLoading }}>
+    <AuthContext.Provider
+      value={{
+        selectedUserData,
+        setSelectedUserdata,
+        loading,
+        setLoading,
+        selectedAddress,
+        setSelectedAddress,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

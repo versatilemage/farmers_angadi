@@ -53,7 +53,6 @@ export async function POST(req: Request) {
     }
 
     const creatorId = token.sub;
-    console.log("Session data:", creatorId);
 
 
     // Parse form data from the request

@@ -70,6 +70,37 @@ export async function PUT(request) {
     }
   }
   
+
+  export async function PATCH(request) {
+    await connectMongo();
+    const { userId, addressId } = await request.json();
+  
+    if (!userId || !addressId) {
+      return NextResponse.json({ message: "User ID and Address ID are required" }, { status: 400 });
+    }
+  
+    try {
+      // Set all other addresses for the user to `default: false`
+      await UserAddressModel.updateMany({ userId }, { default: false });
+  
+      // Set the selected address to `default: true`
+      const updatedAddress = await UserAddressModel.findByIdAndUpdate(
+        addressId,
+        { default: true },
+        { new: true }
+      );
+  
+      if (!updatedAddress) {
+        return NextResponse.json({ message: "Address not found" }, { status: 404 });
+      }
+  
+      return NextResponse.json(updatedAddress);
+    } catch (error) {
+      return NextResponse.json({ message: "Error setting default address", error }, { status: 500 });
+    }
+  }
+
+  
   // Delete Address
   export async function DELETE(request) {
     await connectMongo();

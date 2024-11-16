@@ -1,5 +1,3 @@
-// app/checkout/page.js
-
 "use client";
 
 import axios from "axios";
@@ -9,41 +7,58 @@ import Swal from "sweetalert2";
 import Link from "next/link";
 import IndividualCartProductCard from "@/components/Molecules/CartCard";
 import { CartItemInterface } from "@/utils/interface";
-import { generateInvoicePDF } from "../Invoice/InvoicePdfGeneration";
+import { useAuth } from "@/components/Wrapper/universalState";
+import { useRouter } from "next/navigation";
 
 const CartOrganelles = () => {
+  const router = useRouter();
   const { data: session } = useSession(); // Use session to get user info
   const [cartItems, setCartItems] = useState<CartItemInterface[]>([]);
   const [cartLoading, setCartLoading] = useState(true);
-  const [totalCartAmount, setTotalCartAmount] = useState(0);
+  const [subtotal, setSubtotal] = useState(0);
+  const [gst, setGst] = useState(0);
+  const [cgst, setCgst] = useState(0);
+
+  const [deliveryCharge, setDeliveryCharge] = useState(80); // Fixed delivery charge
+  const [totalCartAmount, setTotalCartAmount] = useState(0); 
   const [editCard, setEditCard] = useState(false);
+  const { selectedAddress } = useAuth();
   const [deleteInitiated, setDeleteInitiated] = useState(false);
   const [changesRequestedcards, setChangesRequestCards] = useState<
     CartItemInterface[]
   >([]);
-
+  console.log(totalCartAmount,typeof(totalCartAmount),"kj");
 
   useEffect(() => {
-    // Recalculate total when cart items or their quantities change
-    const total = cartItems.reduce((acc, item) => {
+    // Recalculate totals when cart items or their quantities change
+    const calculatedSubtotal = cartItems.reduce((acc, item) => {
       const product = item.productDetails;
       const itemTotal = (product.cost - product.discount) * item.productCount;
       return acc + itemTotal;
     }, 0);
-    setTotalCartAmount(total);
+
+    const calculatedGst = calculatedSubtotal * 0.08; // 8% GST
+    const calculatedCGst = calculatedSubtotal * 0.08; // 8% GST
+    const calculatedTotal = calculatedSubtotal + deliveryCharge + calculatedGst + calculatedCGst;
+
+    setSubtotal(calculatedSubtotal);
+    setGst(calculatedGst);
+    setCgst(calculatedCGst);
+
+    setTotalCartAmount(calculatedTotal);
   }, [cartItems]);
-  
+
   // Fetch cart items for the current user
   const fetchData = async () => {
     if (!session?.user?.id) return;
-  
+
     try {
       setCartLoading(true);
-  
+
       const fetchCartData = await axios.get(
         `/api/cart?userId=${session.user.id}`
       );
-  
+
       if (fetchCartData.data?.items?.length) {
         // Filter out items with "PAID" status
         const activeCartItems = fetchCartData.data.items.filter(
@@ -54,14 +69,13 @@ const CartOrganelles = () => {
       } else {
         setCartItems([]);
       }
-  
+
       setCartLoading(false);
     } catch (err) {
       console.error("Error fetching cart data:", err);
       setCartLoading(false);
     }
   };
-  
 
   useEffect(() => {
     if (session?.user?.id && (!cartItems.length || deleteInitiated)) {
@@ -85,25 +99,49 @@ const CartOrganelles = () => {
       Swal.fire({ icon: "error", text: "Your cart is empty.", timer: 3000 });
       return;
     }
-  
+    if (!selectedAddress) {
+      Swal.fire({
+        icon: "warning",
+        title: "No Delivery Address Selected",
+        html: `
+          <p>Please select a delivery address before proceeding.</p>
+          <button id="add-location-btn" class="swal2-confirm swal2-styled">
+            Add New Location
+          </button>
+        `,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        didOpen: () => {
+          const addLocationButton = document.getElementById("add-location-btn");
+          if (addLocationButton) {
+            addLocationButton.addEventListener("click", () => {
+              Swal.close();
+              router.push("/address/add");
+            });
+          }
+        },
+      });
+      return;
+    }
     try {
       const res = await loadRazorpayScript();
       if (!res) {
         Swal.fire({ icon: "error", text: "Razorpay SDK failed to load.", timer: 3000 });
         return;
       }
-  
+      const totalAmountInPaise = Math.round(totalCartAmount * 100);
+
       const response = await axios.post("/api/razorpayOrder", {
-        amount: totalCartAmount,
+        amount: Number(totalAmountInPaise),
         userId: session.user.id,
       });
-  
+
       const { orderId } = response.data;
       if (!orderId) {
         Swal.fire({ icon: "error", text: "Failed to create order.", timer: 3000 });
         return;
       }
-  
+
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: totalCartAmount * 100,
@@ -111,44 +149,71 @@ const CartOrganelles = () => {
         name: "Farmers Angadi",
         description: "Purchase from Angadi Shop",
         order_id: orderId,
-        handler: async function (response) {
-          Swal.fire({
-            icon: "success",
-            text: `Payment successful! Payment ID: ${response.razorpay_payment_id}`,
-            timer: 3000,
-          });
-  
-          // Generate the invoice PDF on the server
-          const pdfRes = await axios.post("/api/generateInvoice", {
-            userName: session?.user?.username || "Customer",
-            paymentId: response.razorpay_payment_id,
-            cartItems: cartItems,
-            totalAmount: totalCartAmount,
-          });
-          const itemsByProducer = cartItems.reduce((acc, item) => {
-            const creatorId = item.productDetails.creatorDetails._id.toString();
-            if (!acc[creatorId]) {
-              acc[creatorId] = { producerEmail: item.productDetails.creatorDetails.email, items: [] };
-            }
-            acc[creatorId].items.push(item.productDetails.name);
-            return acc;
-          }, {});
-  
-          const consumerEmail = session.user.email;
-          const consumerName = session.user.username;
-          const allProductNames = cartItems.map((item) => item.productDetails.name);
-  
-          // Send email with customized messages
-          await axios.post("/api/sendInvoice", {
-            itemsByProducer,
-            consumerEmail,
-            consumerName,
-            paymentId: response.razorpay_payment_id,
-            allProductNames,
-          });
-  
-          // Refresh cart data
-          fetchData();
+        handler: async function (paymentResponse) {
+          try {
+            // Update cart items and status
+            await axios.post("/api/cart/updateCartStatus", {
+              userId: session.user.id,
+              paymentId: paymentResponse.razorpay_payment_id,
+            });
+
+            // Call /api/generateInvoice to create the invoices
+            const itemsByProducer = cartItems.reduce((acc, item) => {
+              const producerId = item.productDetails.creatorDetails._id;
+              const producerEmail = item.productDetails.creatorDetails.email;
+            
+              if (!acc[producerId]) {
+                acc[producerId] = {
+                  producerEmail,
+                  items: [],
+                };
+              }
+            
+              acc[producerId].items.push(item);
+              return acc;
+            }, {});
+            
+            const invoiceResponse = await axios.post("/api/generateInvoice", {
+              userName: session.user.username,
+              paymentId: paymentResponse.razorpay_payment_id,
+              cartItems,
+              itemsByProducer, // Include the constructed itemsByProducer
+              totalAmount: totalCartAmount,
+            });
+
+            // Call /api/sendInvoice to send the invoices
+            await axios.post("/api/sendInvoice", {
+              itemsByProducer: cartItems.reduce((acc, item) => {
+                const producerId = item.productDetails.creatorDetails._id;
+                if (!acc[producerId]) {
+                  acc[producerId] = {
+                    producerEmail: item.productDetails.creatorDetails.email,
+                    items: [],
+                  };
+                }
+                acc[producerId].items.push(item);
+                return acc;
+              }, {}),
+              consumerEmail: session.user.email,
+              consumerName: session.user.username,
+              paymentId: paymentResponse.razorpay_payment_id,
+            });
+
+            Swal.fire({
+              icon: "success",
+              text: `Payment and invoice generation successful!`,
+              timer: 3000,
+            });
+
+            fetchData(); // Refresh cart data
+          } catch (error) {
+            console.error("Error after payment:", error);
+            Swal.fire({
+              icon: "error",
+              text: "Payment was successful, but something went wrong afterward.",
+              timer: 3000,
+            });
+          }
         },
         prefill: {
           name: session?.user?.username || "Your Name",
@@ -157,7 +222,7 @@ const CartOrganelles = () => {
         },
         theme: { color: "#3399cc" },
       };
-  
+
       const paymentObject = new window.Razorpay(options);
       paymentObject.open();
     } catch (error) {
@@ -169,8 +234,7 @@ const CartOrganelles = () => {
       });
     }
   };
-  
-  
+
   return (
     <div className="flex flex-col items-center w-full h-full">
       <div className="flex items-center flex-col max-w-[1280px] w-full h-full p-6 gap-10">
@@ -230,13 +294,14 @@ const CartOrganelles = () => {
 
         {/* Total Cart Amount */}
         {cartItems.length > 0 && (
-          <div className="w-full max-w-[1024px] flex justify-end items-center">
-            <p className="text-2xl font-bold">
-              Total: ₹ {totalCartAmount.toFixed(2)}
-            </p>
+          <div className="w-full max-w-[1024px] flex flex-col gap-2">
+            <p className="text-lg font-semibold">Subtotal: ₹{subtotal.toFixed(2)}</p>
+            <p className="text-lg font-semibold">GST (8%): ₹{gst.toFixed(2)}</p>
+            <p className="text-lg font-semibold">CGST (8%): ₹{cgst.toFixed(2)}</p>
+            <p className="text-lg font-semibold">Delivery Charge: ₹{deliveryCharge.toFixed(2)}</p>
+            <p className="text-2xl font-bold">Total: ₹{totalCartAmount.toFixed(2)}</p>
           </div>
         )}
-
         {/* Action Buttons */}
         <div className="w-full flex flex-col items-center gap-3">
           <div className="flex items-center gap-4">

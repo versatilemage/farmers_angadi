@@ -53,7 +53,6 @@ export const authOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
-      console.log(token,"LOP");
       
       if (user) {
         token.userId = user.id;

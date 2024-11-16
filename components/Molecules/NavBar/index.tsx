@@ -6,21 +6,37 @@ import { CommonApplicationLogo } from "../../Atoms/LogoImage";
 import SearchedDataListed from "@/components/Molecules/Searched";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/components/Wrapper/universalState";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import axios from "axios";
 
 const CommonNavBar = () => {
   const pathname = usePathname();
+  const dropdownRef = useRef<HTMLDivElement>(null); // Ref to detect outside clicks
+  const [showAddressDropdown, setShowAddressDropdown] = useState(false);
+
   const router = useRouter();
   const { selectedUserData } = useAuth() as { selectedUserData: IUsersDocument };
+  const handleOutsideClick = (event: MouseEvent) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      setShowAddressDropdown(false); // Close dropdown if clicking outside
+    }
+  };
+
+  useEffect(() => {
+    if (showAddressDropdown) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    } else {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    }
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [showAddressDropdown]);
 
   const [isOpen, setIsOpen] = useState(false);
   const [productName, setProductname] = useState("");
   const [userAddresses, setUserAddresses] = useState<any[]>([]);
-  const [selectedAddress, setSelectedAddress] = useState<any>(null);
-  const [showAddressDropdown, setShowAddressDropdown] = useState(false);
+  const { selectedAddress, setSelectedAddress } = useAuth();
 
   const isAuthenticationPage = pathname === "/authentication";
   const clearSearchText = () => setProductname("");
@@ -36,8 +52,17 @@ const CommonNavBar = () => {
   const fetchUserAddresses = async () => {
     try {
       const response = await axios.get(`/api/useraddress?userId=${selectedUserData.id}`);
-      setUserAddresses(response.data);
-      setSelectedAddress(response.data[0]);
+      const addresses = response.data;
+
+      if (addresses.length) {
+        // Find the default address
+        const defaultAddress = addresses.find((address) => address.default);
+        setSelectedAddress(defaultAddress || addresses[0]); // Fallback to the first address if no default
+        setUserAddresses(addresses);
+      } else {
+        setUserAddresses([]);
+        setSelectedAddress(null); // Clear selected address if no addresses exist
+      }
     } catch (error) {
       console.error("Error fetching addresses:", error);
     }
@@ -84,11 +109,11 @@ const CommonNavBar = () => {
           )}
 
           {/* Location Dropdown */}
-          <div className="relative">
+          <div className="relative" ref={dropdownRef}>
   {isUserAuthenticated && (
     <div
-      className="flex items-center gap-4 w-[14rem] py-2 px-3 bg-green-900 text-white rounded-md cursor-pointer"
-      onClick={() => setShowAddressDropdown(!showAddressDropdown)}
+    className="flex items-center gap-4 w-[14rem] py-2 px-3 bg-green-900 text-white rounded-md cursor-pointer"
+    onClick={() => setShowAddressDropdown(!showAddressDropdown)}
     >
       <svg width="2rem" height="2rem" viewBox="0 0 16 16" fill="currentColor">
         <path d="M8 0a5 5 0 0 0-5 5c0 5 5 11 5 11s5-6 5-11a5 5 0 0 0-5-5m0 8a3 3 0 1 1 0-6a3 3 0 0 1 0 6" />
@@ -98,22 +123,48 @@ const CommonNavBar = () => {
           ? `${selectedAddress?.doorNumber}, ${selectedAddress.street}, ${selectedAddress.city}, ${selectedAddress.pinNumber}`
           : "Select Location"}
       </div>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="1.25rem"
+        height="1.25rem"
+        viewBox="0 0 24 24"
+        fill="white"
+        className={`transform transition-transform ${
+          showAddressDropdown ? "rotate-180" : "rotate-0"
+        }`}
+      >
+        <path d="M12 16.59l-4.29-4.3a1 1 0 0 1 1.42-1.42L12 13.76l3.88-3.88a1 1 0 0 1 1.42 1.42l-4.3 4.29a1 1 0 0 1-1.42 0z" />
+      </svg>
     </div>
   )}
+
   {showAddressDropdown && (
-    <div className="absolute top-16 left-0 w-48 bg-white shadow-lg rounded-lg py-2 z-50">
-      {userAddresses.map((address, index) => (
-        <div
-          key={index}
-          className="px-4 py-2 text-gray-700 cursor-pointer hover:bg-gray-200 truncate-2-lines"
-          onClick={() => handleSelectAddress(address)}
-          title={`${address.street}, ${address.city}`}
-        >
-          {`${address.doorNumber}, ${address.street}, ${address.city},${address.pinNumber}`}
-        </div>
-      ))}
+    <div className="absolute top-16 left-0 w-[20rem] bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+      <div className="p-4 bg-gray-50 rounded-t-lg">
+        <h3 className="text-lg font-semibold text-gray-800">Saved Addresses</h3>
+      </div>
+      <div className="max-h-60 overflow-y-auto divide-y divide-gray-200">
+        {userAddresses.map((address, index) => (
+          <div
+            key={index}
+            className={`px-4 py-3 flex flex-col gap-1 cursor-pointer transition-colors ${
+              selectedAddress?._id === address._id
+                ? "bg-green-50 border-l-4 border-green-500"
+                : "hover:bg-gray-100"
+            }`}
+            onClick={() => handleSelectAddress(address)}
+          >
+            <span className="text-sm font-semibold text-gray-700">
+              {address.doorNumber}, {address.street}
+            </span>
+            <span className="text-sm text-gray-600">
+              {address.city}, {address.state} - {address.pinNumber}
+            </span>
+          </div>
+        ))}
+      </div>
       <div
-        className="px-4 py-2 text-blue-600 cursor-pointer hover:bg-gray-200"
+        className="px-4 py-3 text-center text-blue-600 font-medium hover:bg-gray-100 cursor-pointer rounded-b-lg"
         onClick={() => router.push("/address/add")}
       >
         Add New Address
@@ -121,7 +172,6 @@ const CommonNavBar = () => {
     </div>
   )}
 </div>
-
 
 
           {/* Navigation Links */}

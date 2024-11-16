@@ -11,6 +11,23 @@ const AddressFormPage = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [userId, setUserId] = useState<string | null>(null);
+  const handleSetDefault = async (id: string) => {
+    try {
+      await axios.patch(`/api/useraddress`, { userId, addressId: id });
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Default address set successfully!",
+      });
+      fetchAddresses(userId as string); // Refresh the addresses
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to set default address. Please try again.",
+      });
+    }
+  };
   const [formData, setFormData] = useState({
     doorNumber: "",
     contactInfo: "",
@@ -224,21 +241,36 @@ const AddressFormPage = () => {
                 className="p-4 bg-gray-100 rounded-md shadow flex justify-between items-center"
               >
                 <span>{`${address.doorNumber}, ${address.street}, ${address.city}, ${address.state}, ${address.pinNumber}`}</span>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => handleEdit(address)}
-                    className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(address._id)}
-                    className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
+                <div className="flex space-x-2 items-center">
+        <div className="relative group">
+          <button
+            onClick={() => handleSetDefault(address._id)}
+            className={`px-3 py-1 rounded hover:bg-green-600 text-white ${
+              address.default ? "bg-green-500" : "bg-gray-500"
+            }`}
+          >
+            Default
+          </button>
+          <div
+  className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-gray-700 text-white text-sm py-1 px-3 rounded shadow-lg"
+  >
+            Mark this address as default
+          </div>
+        </div>
+        <button
+          onClick={() => handleEdit(address)}
+          className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Edit
+        </button>
+        <button
+          onClick={() => handleDelete(address._id)}
+          className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
             ))}
           </div>
         </div>

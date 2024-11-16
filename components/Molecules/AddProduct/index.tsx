@@ -1,6 +1,9 @@
 // pages/product/add.tsx
 
 "use client";
+import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
+
 import { FormEvent, useState } from "react";
 import Image from "next/image";
 import AddProductBGImage from "@/public/assets/AddProductBGImage.jpg";
@@ -19,6 +22,7 @@ const AddProductForm = () => {
   const [description, setDescription] = useState("");
   const [measurement, setMeasurement] = useState("");
   const [image, setImage] = useState<File | null>(null);
+  const router = useRouter();
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -43,8 +47,19 @@ const AddProductForm = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage("Product created successfully!");
-        resetFormFields(); // Clear all form fields
+        // Show success toast
+        Swal.fire({
+          icon: "success",
+          title: "Product Created Successfully!",
+          toast: true,
+          position: "top-right",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
+
+        // Redirect to home page
+        router.push("/");
       } else {
         setMessage(`Error: ${data.message}`);
       }
@@ -55,18 +70,6 @@ const AddProductForm = () => {
       setIsSubmitting(false);
     }
   }
-
-  // Reset all form fields
-  const resetFormFields = () => {
-    setName("");
-    setCategory("");
-    setCost("");
-    setDiscount("");
-    setStock("");
-    setDescription("");
-    setMeasurement("");
-    setImage(null);
-  };
 
   return (
     <div

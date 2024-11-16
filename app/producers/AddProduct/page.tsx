@@ -11,10 +11,8 @@ export default function AddProduct() {
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      console.log("User is unauthenticated, redirecting to /authentication");
       router.push("/authentication");
     } else if (session && session.user.role !== "Producers" && session.user.role !== "admin") {
-      console.log("User role is not Producers or Admin, redirecting to /");
       router.push("/");
     }
   }, [status, router, session, session?.user?.role]);

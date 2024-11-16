@@ -11,6 +11,8 @@ export interface IUserAddressDocument extends ReusableModel, Document {
     state: string;
     country: string;
     pinNumber: number;
+    default: Boolean; // Add this field
+
 }
 
 const userAddressSchema: Schema<IUserAddressDocument> = new Schema<IUserAddressDocument>({
@@ -23,6 +25,8 @@ const userAddressSchema: Schema<IUserAddressDocument> = new Schema<IUserAddressD
     state: { type: String },
     country: { type: String },
     pinNumber: { type: Number },
+    default: { type: Boolean, default: false }, // Add this field
+
 });
 
 let UserAddressModel: Model<IUserAddressDocument>;

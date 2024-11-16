@@ -82,7 +82,6 @@ export async function getCartItems(req: NextRequest) {
       { $unwind: "$productDetails.creatorDetails" }, // Flatten the populated creator details
     ]);
 
-    console.log(cartItems); // Check if products are being populated
     return NextResponse.json({ items: cartItems });
 
   } catch (error) {

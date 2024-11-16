@@ -1,61 +1,92 @@
-// app/api/sendInvoice/route.ts
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
-import fs from "fs";
 import path from "path";
+import fs from "fs";
 
 export async function POST(req) {
-    const { itemsByProducer, consumerEmail, consumerName, paymentId, allProductNames } = await req.json();
+  const { itemsByProducer, consumerEmail, consumerName, paymentId } = await req.json();
 
   try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "asolinmaso22@gmail.com", // Your email address
-        pass: "fleh qyzm jmqi umfl"
+        user: "balajikrishna44589@gmail.com", // Your email address
+        pass: "ebwd yojq jrdt huaw", // Your email app password
       },
     });
-    
-    const filePath = path.join(process.cwd(), "invoices", `invoice_${paymentId}.pdf`);
-    const attachment = fs.readFileSync(filePath);
 
     for (const producerId in itemsByProducer) {
-        const { producerEmail, items } = itemsByProducer[producerId];
-  
-        const producerMailOptions = {
-          from: process.env.EMAIL_USERNAME,
-          to: producerEmail,
-          subject: "Your products have been purchased!",
-          text: `Congratulations! The following items were purchased by ${consumerName}: ${items.join(", ")}.`,
-          attachments: [
-            {
-              filename: `invoice_${paymentId}.pdf`,
-              content: attachment,
-            },
-          ],
-        };
-  
-        await transporter.sendMail(producerMailOptions);
+      const { producerEmail } = itemsByProducer[producerId];
+      const producerInvoicePath = path.join(process.cwd(), "invoices", `producer_invoice_${producerId}_${paymentId}.pdf`);
+      
+      // Log producer email and file path for debugging
+      console.log(`Preparing to send email to producer: ${producerEmail}`);
+      console.log(`Checking invoice path: ${producerInvoicePath}`);
+
+      if (!producerEmail) {
+        console.warn(`Producer email not found for producer ID: ${producerId}, skipping.`);
+        continue;
       }
-  
-      // Send a single email to the consumer with all products
-      const consumerMailOptions = {
-        from: process.env.EMAIL_USERNAME,
-        to: consumerEmail,
-        subject: "Your purchase was successfully placed!",
-        text: `Thank you for your purchase, ${consumerName}! Your order includes: ${allProductNames.join(", ")}.`,
+
+      if (!fs.existsSync(producerInvoicePath)) {
+        console.warn(`Producer invoice not found at ${producerInvoicePath} for producer ID: ${producerId}, skipping.`);
+        continue;
+      }
+
+      const producerMailOptions = {
+        from: "noreply@gmail.com",
+        to: producerEmail,
+        subject: "Your products have been purchased!",
+        text: `Hello, your products have been purchased! Please find the invoice attached.`,
         attachments: [
           {
-            filename: `invoice_${paymentId}.pdf`,
-            content: attachment,
+            filename: `producer_invoice_${producerId}_${paymentId}.pdf`,
+            path: producerInvoicePath,
           },
         ],
       };
-  
-      await transporter.sendMail(consumerMailOptions);
-    return NextResponse.json({ message: "Invoice sent successfully" });
+
+      // Send email and log success or failure
+      try {
+        await transporter.sendMail(producerMailOptions);
+        console.log(`Email successfully sent to producer: ${producerEmail}`);
+      } catch (mailError) {
+        console.error(`Failed to send email to producer: ${producerEmail}`, mailError);
+      }
+    }
+
+    const consumerInvoicePath = path.join(process.cwd(), "invoices", `invoice_${paymentId}.pdf`);
+    console.log(`Consumer invoice path: ${consumerInvoicePath}`);
+
+    if (!fs.existsSync(consumerInvoicePath)) {
+      console.warn(`Consumer invoice not found at ${consumerInvoicePath} for payment ID: ${paymentId}, skipping.`);
+    } else {
+      const consumerMailOptions = {
+        from: "noreply@gmail.com",
+        to: consumerEmail,
+        subject: "Thank you for your purchase!",
+        text: `Hello ${consumerName}, thank you for your purchase! Your invoice is attached.`,
+        attachments: [
+          {
+            filename: `invoice_${paymentId}.pdf`,
+            path: consumerInvoicePath,
+          },
+        ],
+      };
+
+      try {
+        await transporter.sendMail(consumerMailOptions);
+        console.log(`Email successfully sent to consumer: ${consumerEmail}`);
+      } catch (consumerMailError) {
+        console.error(`Failed to send email to consumer: ${consumerEmail}`, consumerMailError);
+      }
+    }
+
+    console.log(itemsByProducer, "producerEmail");
+
+    return NextResponse.json({ message: "Invoices sent successfully" });
   } catch (error) {
-    console.error("Error sending email:", error);
-    return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
+    console.error("Error sending invoices:", error);
+    return NextResponse.json({ error: "Failed to send invoices" }, { status: 500 });
   }
 }
