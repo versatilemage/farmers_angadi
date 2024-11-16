@@ -31,6 +31,7 @@ export async function POST(req: Request) {
         cartItems,
         deliveryCharge: 80,
         gstRate: 0.08,
+        cgstRate: 0.08,
       },
     });
 
@@ -48,8 +49,9 @@ export async function POST(req: Request) {
           userName: `Producer ID: ${producerId}`,
           paymentId,
           cartItems: itemsByProducer[producerId].items,
-          deliveryCharge: 0, // No delivery charge for producers
-          gstRate: 0, // No GST for producers
+          deliveryCharge: 0,
+        gstRate: 0.08,
+        cgstRate: 0.08,
         },
       });
     }
@@ -64,7 +66,7 @@ export async function POST(req: Request) {
 
 // Utility function to generate PDFs
 async function generatePDF({ filePath, title, details }) {
-  const { userName, paymentId, cartItems, deliveryCharge, gstRate } = details;
+  const { userName, paymentId, cartItems, deliveryCharge, gstRate,cgstRate } = details;
 
   const pdfDoc = await PDFDocument.create();
   const page = pdfDoc.addPage([600, 700]);
@@ -170,7 +172,19 @@ async function generatePDF({ filePath, title, details }) {
     tableY -= 20;
   }
 
-  page.drawText(`Total Amount: ${(subtotal + deliveryCharge).toFixed(2)}`, {
+  if (cgstRate > 0) {
+    const cgstAmount = subtotal * gstRate;
+    page.drawText(`CGST (${(gstRate * 100).toFixed(0)}%): ${cgstAmount.toFixed(2)}`, {
+      x: 400,
+      y: tableY,
+      size: fontSize,
+      font: fontBold,
+      color: rgb(0, 0, 0),
+    });
+    tableY -= 20;
+  }
+
+  page.drawText(`Total Amount: ${(subtotal + deliveryCharge + gstRate*subtotal + cgstRate*subtotal ).toFixed(2)}`, {
     x: 400,
     y: tableY,
     size: fontSize + 2,

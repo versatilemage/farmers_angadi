@@ -41,7 +41,7 @@ const AllCategoryListed = () => {
     setSelectedCategory(category);
   };
 
-  const categories = ["All", "Fruits", "Vegetables"];
+  const categories = ["All", "Fruits", "Vegetables","Value Added Products"];
 
   // Group products by category
   const groupedProducts = productData.reduce((acc, product) => {
