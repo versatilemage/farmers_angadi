@@ -72,7 +72,7 @@ const SignupForm = () => {
         onSubmit={onSubmit}
       >
         {({ isSubmitting, values }) => (
-          <Form className="space-y-6">
+          <Form className="space-y-6" autoComplete="off">
             {error && <p className="text-red-600 text-center">{error}</p>}
 
             <div className="relative">
