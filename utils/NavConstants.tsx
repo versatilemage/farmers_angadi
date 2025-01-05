@@ -29,6 +29,20 @@ export const navOptions = [
         ),
     },
     {
+        name: "About",
+        link: "/about",
+        icon: (classname) => (
+            <svg
+                className={classname}
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+            >
+                <path d="M5 20h14v-2H5v2zM17 4h-2.4L9 9.6V16h2v-5h2.5L19 7.5V4z" />
+            </svg>
+        ),
+    },
+    {
         name: "Contact",
         link: "/contact",
         icon: (classname) => (
