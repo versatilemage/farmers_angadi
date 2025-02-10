@@ -91,8 +91,8 @@ const PolicyPage = () => {
             <h2 className="text-2xl font-bold text-secondary">7. Contact Us</h2>
             <p>
               If you have any questions about this Privacy Policy, please contact us at{" "}
-              <a href="mailto:support@farmersangadi.com" className="text-blue-600 underline">
-                support@farmersangadi.com
+              <a href="mailto:farmersangadi@gmail.com" className="text-blue-600 underline">
+                farmersangadi@gmail.com
               </a>
               .
             </p>
@@ -260,8 +260,8 @@ const PolicyPage = () => {
       <footer className="text-center mt-8">
         <p className="text-sm text-gray-500">
           We aim to make your shopping experience smooth and hassle-free. If you have any questions or need further assistance, please contact our customer support team at{" "}
-          <a href="mailto:support@farmersangadi.com" className="text-blue-600 underline">
-            support@farmersangadi.com
+          <a href="mailto:farmersangadi@gmail.com" className="text-blue-600 underline">
+            farmersangadi@gmail.com
           </a>
           .
         </p>

@@ -16,7 +16,7 @@ const BasicProfileSchema: Schema<IUsersDocument> = new Schema<IUsersDocument>({
     password: { type: String },
     picture: { type: String },
     otp: { type: String },
-    role: { type: String, default: "Producers" },
+    role: { type: String, default: "Consumers" },
     ...ReusableTimeModel
 })
 

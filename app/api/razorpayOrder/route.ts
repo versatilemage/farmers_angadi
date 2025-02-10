@@ -1,8 +1,5 @@
 // app/api/razorpayOrder/route.ts
 import Razorpay from "razorpay";
-import connectMongo from "@/utils/Database";
-import CartModel from "@/models/cart";
-import ProductStockSchema from "@/models/product/stock";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -22,28 +19,28 @@ export async function POST(req: Request) {
     });
 
     // Database connection
-    await connectMongo();
+    // await connectMongo();
 
-    // Fetch user's cart items
-    const cartItems = await CartModel.find({ userId, status: "CART" });
+    // // Fetch user's cart items
+    // const cartItems = await CartModel.find({ userId, status: "CART" });
 
-    // Update stock for all items in the cart
-    for (const item of cartItems) {
-      const { productId, productCount } = item;
+    // // Update stock for all items in the cart
+    // for (const item of cartItems) {
+    //   const { productId, productCount } = item;
 
-      // Reduce stock
-      await ProductStockSchema.findOneAndUpdate(
-        { productId },
-        { $inc: { stock: -productCount } }, // Decrease stock by productCount
-        { new: true }
-      );
-    }
+    //   // Reduce stock
+    //   await ProductStockSchema.findOneAndUpdate(
+    //     { productId },
+    //     { $inc: { stock: -productCount } }, // Decrease stock by productCount
+    //     { new: true }
+    //   );
+    // }
 
     // Mark cart items as paid
-    await CartModel.updateMany(
-      { userId, status: "CART" },
-      { $set: { status: "PAID" } }
-    );
+    // await CartModel.updateMany(
+    //   { userId, status: "CART" },
+    //   { $set: { status: "PAID" } }
+    // );
 
     return NextResponse.json({ orderId: order.id });
   } catch (error) {

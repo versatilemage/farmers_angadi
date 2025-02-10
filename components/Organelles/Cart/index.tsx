@@ -12,14 +12,13 @@ import { useRouter } from "next/navigation";
 
 const CartOrganelles = () => {
   const router = useRouter();
-  const { data: session } = useSession(); // Use session to get user info
+  const { data: session } = useSession();
   const [cartItems, setCartItems] = useState<CartItemInterface[]>([]);
   const [cartLoading, setCartLoading] = useState(true);
   const [subtotal, setSubtotal] = useState(0);
   const [gst, setGst] = useState(0);
-  const [cgst, setCgst] = useState(0);
 
-  const [deliveryCharge, setDeliveryCharge] = useState(80); // Fixed delivery charge
+  const [deliveryCharge, setDeliveryCharge] = useState(80);
   const [totalCartAmount, setTotalCartAmount] = useState(0); 
   const [editCard, setEditCard] = useState(false);
   const { selectedAddress } = useAuth();
@@ -27,28 +26,23 @@ const CartOrganelles = () => {
   const [changesRequestedcards, setChangesRequestCards] = useState<
     CartItemInterface[]
   >([]);
-  console.log(totalCartAmount,typeof(totalCartAmount),"kj");
 
   useEffect(() => {
-    // Recalculate totals when cart items or their quantities change
     const calculatedSubtotal = cartItems.reduce((acc, item) => {
       const product = item.productDetails;
       const itemTotal = (product.cost - product.discount) * item.productCount;
       return acc + itemTotal;
     }, 0);
 
-    const calculatedGst = calculatedSubtotal * 0.08; // 8% GST
-    const calculatedCGst = calculatedSubtotal * 0.08; // 8% GST
-    const calculatedTotal = calculatedSubtotal + deliveryCharge + calculatedGst + calculatedCGst;
+    const calculatedGst = calculatedSubtotal * 0.05;
+    const calculatedTotal = calculatedSubtotal + deliveryCharge + calculatedGst;
 
     setSubtotal(calculatedSubtotal);
     setGst(calculatedGst);
-    setCgst(calculatedCGst);
 
     setTotalCartAmount(calculatedTotal);
   }, [cartItems]);
 
-  // Fetch cart items for the current user
   const fetchData = async () => {
     if (!session?.user?.id) return;
 
@@ -151,13 +145,10 @@ const CartOrganelles = () => {
         order_id: orderId,
         handler: async function (paymentResponse) {
           try {
-            // Update cart items and status
             await axios.post("/api/cart/updateCartStatus", {
               userId: session.user.id,
               paymentId: paymentResponse.razorpay_payment_id,
             });
-
-            // Call /api/generateInvoice to create the invoices
             const itemsByProducer = cartItems.reduce((acc, item) => {
               const producerId = item.productDetails.creatorDetails._id;
               const producerEmail = item.productDetails.creatorDetails.email;
@@ -173,15 +164,15 @@ const CartOrganelles = () => {
               return acc;
             }, {});
             
-            const invoiceResponse = await axios.post("/api/generateInvoice", {
+            await axios.post("/api/generateInvoice", {
+              userId: session.user.id,
               userName: session.user.username,
               paymentId: paymentResponse.razorpay_payment_id,
               cartItems,
-              itemsByProducer, // Include the constructed itemsByProducer
+              itemsByProducer,
               totalAmount: totalCartAmount,
             });
 
-            // Call /api/sendInvoice to send the invoices
             await axios.post("/api/sendInvoice", {
               itemsByProducer: cartItems.reduce((acc, item) => {
                 const producerId = item.productDetails.creatorDetails._id;
@@ -205,7 +196,7 @@ const CartOrganelles = () => {
               timer: 3000,
             });
 
-            fetchData(); // Refresh cart data
+            await fetchData();
           } catch (error) {
             console.error("Error after payment:", error);
             Swal.fire({
@@ -242,7 +233,6 @@ const CartOrganelles = () => {
           Cart
         </h1>
 
-        {/* Cart Items Section */}
         <div className="flex flex-col items-center justify-start h-full w-full relative overflow-y-scroll min-h-[50vh]">
           {cartLoading && (
             <div className="absolute w-full h-full flex flex-col items-center justify-center bg-white/60">
@@ -280,7 +270,6 @@ const CartOrganelles = () => {
                 setChangedData={setChangesRequestCards}
                 toDelete={setDeleteInitiated}
                 onItemCountChange={(updatedItem) => {
-                  // Update the cartItems state with the new item count
                   setCartItems((prevItems) =>
                     prevItems.map((item) =>
                       item._id === updatedItem._id ? { ...item, productCount: updatedItem.productCount } : item
@@ -291,18 +280,14 @@ const CartOrganelles = () => {
             ))
           )}
         </div>
-
-        {/* Total Cart Amount */}
         {cartItems.length > 0 && (
           <div className="w-full max-w-[1024px] flex flex-col gap-2">
             <p className="text-lg font-semibold">Subtotal: ₹{subtotal.toFixed(2)}</p>
-            <p className="text-lg font-semibold">GST (8%): ₹{gst.toFixed(2)}</p>
-            <p className="text-lg font-semibold">CGST (8%): ₹{cgst.toFixed(2)}</p>
+            <p className="text-lg font-semibold">GST (5%): ₹{gst.toFixed(2)}</p>
             <p className="text-lg font-semibold">Delivery Charge: ₹{deliveryCharge.toFixed(2)}</p>
             <p className="text-2xl font-bold">Total: ₹{totalCartAmount.toFixed(2)}</p>
           </div>
         )}
-        {/* Action Buttons */}
         <div className="w-full flex flex-col items-center gap-3">
           <div className="flex items-center gap-4">
             <button

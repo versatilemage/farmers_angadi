@@ -30,9 +30,9 @@ const search = searchParams.get('page')
         <div className="md:w-2/4 w-full text-center flex flex-col items-center justify-center gap-16">
           {search !== "signup" ? <LoginForm /> : <SignupForm/>}
           <section className="p-3 flex items-center justify-between lg:w-3/4 w-full">
-            <p className="text-tertiary hover:text-secondary duration-300 cursor-pointer hover:font-lightbold">
+            <Link href={'/forgot-password'} className="text-tertiary hover:text-secondary duration-300 cursor-pointer hover:font-lightbold">
               Forgot Password ?
-            </p>
+            </Link>
             <Link className="text-tertiary hover:text-secondary duration-300 cursor-pointer hover:font-lightbold" href={search !== "signup" ? "/authentication?page=signup" : "/authentication?page=signin"}>
                 {search !== "signup" ? "Create an account" : "Already have an account"}
             </Link>

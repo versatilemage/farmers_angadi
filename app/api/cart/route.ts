@@ -23,7 +23,7 @@ export async function DELETE(req: NextRequest) {
 
 // Fetch cart items
 // Fetch cart items
-export async function getCartItems(req: NextRequest) {
+async function getCartItems(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get("userId");
   const isAdmin = searchParams.get("admin") === "true"; // Check if admin access

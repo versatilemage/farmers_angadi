@@ -76,12 +76,12 @@ const CommonNavBar = () => {
   return (
     <nav className="sticky top-0 z-50 bg-primary shadow-lg transition-all duration-300 ease-in-out backdrop-blur-md">
       <div className="flex flex-row items-center justify-between gap-6 w-full max-w-[1280px] mx-auto p-4">
-        <span className="xl:block hidden">
+        <span className="">
           <CommonApplicationLogo />
         </span>
 
         {/* Desktop Navigation */}
-        <div className="hidden xl:flex flex-row items-center justify-between w-full gap-8">
+        <div className="hidden lg:flex flex-row items-center justify-between w-full gap-8">
           {!isAuthenticationPage && (
             <div className="relative w-[16em]">
               <input
@@ -219,7 +219,7 @@ const CommonNavBar = () => {
         </div>
 
         {/* Mobile Hamburger Menu */}
-        <svg width="1em" height="1em" viewBox="0 0 24 24" className="block xl:hidden text-white text-2xl cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
+        <svg width="1em" height="1em" viewBox="0 0 24 24" className="block lg:hidden text-white text-2xl cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
           <path fill="green" d="M3 18v-2h18v2zm0-5v-2h18v2zm0-5V6h18v2z" />
         </svg>
       </div>

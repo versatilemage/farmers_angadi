@@ -54,7 +54,7 @@ const SearchedDataListed = ({
 
   return (
     <>
-      <div className="w-full h-max bg-slate-200 flex flex-col max-h-[600px] overflow-y-auto fixed no-scrollbar gap-0 xl:top-20 top-20 z-50 p-6">
+      <div className="w-full h-max bg-slate-200 flex flex-col max-h-[600px] overflow-y-auto fixed no-scrollbar gap-0 xl:top-36 top-20 z-50 p-6">
         {loading ? (
           <div className="flex items-center justify-center w-full p-10">
             {/* Loading Spinner */}
@@ -111,7 +111,7 @@ const SearchedDataListed = ({
           )
         )}
       </div>
-      <div className="fixed inset-0 w-screen h-screen p-8 bg-black/50 xl:top-24 top-20 z-30">
+      <div className="fixed inset-0 w-screen h-screen p-8 bg-black/50 xl:top-36 top-20 z-30">
         <div
           className="absolute inset-0 z-40 h-full"
           onClick={

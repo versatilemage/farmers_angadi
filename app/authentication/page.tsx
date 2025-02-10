@@ -1,5 +1,5 @@
 "use client"
-import CommonNavBar from "@/components/Molecules/NavBar"
+// import CommonNavBar from "@/components/Molecules/NavBar"
 import AuthenticationComponent from "@/components/Organelles/Authentication"
 import { useAuth } from "@/components/Wrapper/universalState";
 import { useRouter } from "next/navigation";
@@ -17,7 +17,7 @@ export default function AuthenticationLoginPage () {
 
     return (
         <>
-        <CommonNavBar />
+        {/* <CommonNavBar /> */}
             <AuthenticationComponent/>
         </>
     )

@@ -48,7 +48,6 @@ export async function PUT (req: NextRequest) {
         return NextResponse.json({message: "Stock updated successfully"})
     
     } catch (err) {
-        console.log("err", err)
         return NextResponse.json({message: "Something went wrong", status: 500})
     } 
 }

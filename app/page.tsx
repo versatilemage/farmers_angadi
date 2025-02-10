@@ -1,5 +1,5 @@
 "use client"
-import CommonNavBar from "@/components/Molecules/NavBar"
+// import CommonNavBar from "@/components/Molecules/NavBar"
 import LandingHomePage from "@/components/Organelles/Home"
 import { usePathname } from 'next/navigation';
 
@@ -10,7 +10,7 @@ export default function Home() {
   const isAdminPage = pathname.startsWith('/admin');
   return (
     <>
-                  {!isAdminPage&&<CommonNavBar/>}
+                  {/* {!isAdminPage&&<CommonNavBar/>} */}
                   <LandingHomePage/>
     </>
   )

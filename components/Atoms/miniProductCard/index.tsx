@@ -1,16 +1,27 @@
+"use client";
+
 import { useState } from "react";
 import { FaPencilAlt } from "react-icons/fa";
 import Image from "next/image";
 import Link from "next/link";
 import EditProductForm from "@/app/producers/EditProduct/index";
 
-const MiniProductCard = ({ data, isCreator,refreshProducts  }) => {
+const MiniProductCard = ({
+  data,
+  isCreator,
+  refreshProducts,
+}: {
+  data: any;
+  isCreator?: boolean;
+  refreshProducts: () => void;
+}) => {
   const [isEditing, setIsEditing] = useState(false);
 
   // Calculate final price and discount percentage
   const discountAmount = data.discount > 0 ? data.discount : 0;
   const finalPrice = (data.cost - discountAmount).toFixed(2);
-  const discountPercentage = data.discount > 0 ? ((discountAmount / data.cost) * 100).toFixed(0) : 0;
+  const discountPercentage =
+    data.discount > 0 ? ((discountAmount / data.cost) * 100).toFixed(0) : 0;
 
   // Stock information
   const stock = data.stockData?.stock || "Out of Stock";
@@ -38,23 +49,42 @@ const MiniProductCard = ({ data, isCreator,refreshProducts  }) => {
           </span>
         )}
         <div className="relative w-full h-64 overflow-hidden">
-          <Image src={data.image} alt={data.name} layout="fill" objectFit="cover" quality={100} className="rounded-t-lg" />
+          <Image
+            src={data.image}
+            alt={data.name}
+            layout="fill"
+            objectFit="cover"
+            quality={100}
+            className="rounded-t-lg"
+          />
         </div>
 
         <div className="flex flex-col items-start gap-2 p-4 bg-secondary rounded-b-lg">
           <span className="flex items-center justify-between w-full gap-2">
-            <p className="text-primary text-sm font-medium capitalize w-32 md:w-40 truncate">{data.name}</p>
+            <p className="text-primary text-sm font-medium capitalize w-32 md:w-40 truncate">
+              {data.name}
+            </p>
             <p className="text-red-800 p-2 rounded bg-white text-sm font-bold capitalize">{`${stock} ${measurement}`}</p>
           </span>
 
           <p className="text-xl text-primary font-bold">₹ {finalPrice}</p>
-          {data.discount > 0 && <p className="text-sm text-tertiary line-through">₹ {data.cost.toFixed(2)}</p>}
+          {data.discount > 0 && (
+            <p className="text-sm text-tertiary line-through">
+              ₹ {data.cost.toFixed(2)}
+            </p>
+          )}
         </div>
       </Link>
 
       {/* Render Edit Form as Modal */}
       {isEditing && (
-        <EditProductForm productId={data._id} onClose={() => { setIsEditing(false); refreshProducts(); }} />
+        <EditProductForm
+          productId={data._id}
+          onClose={() => {
+            setIsEditing(false);
+            refreshProducts();
+          }}
+        />
       )}
     </div>
   );

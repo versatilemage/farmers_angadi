@@ -5,6 +5,7 @@ import PageWrapper from "@/components/Wrapper";
 import { AuthWrapper } from "@/components/Wrapper/authwrapper";
 import { AuthProvider } from "@/components/Wrapper/universalState";
 import Provider from "@/components/provider";
+import { Toaster } from "@/components/Atoms/UI/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,6 +25,7 @@ export default function RootLayout({
         <Provider>
           <AuthProvider>
             <AuthWrapper>
+              <Toaster/>
               <PageWrapper>{children}</PageWrapper>
             </AuthWrapper>
           </AuthProvider>

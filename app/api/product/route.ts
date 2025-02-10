@@ -10,7 +10,6 @@ import { v4 as uuidv4 } from "uuid";
 import path from "path";
 // Import necessary modules from NextAuth and Next.js server
 import { getServerSession } from "next-auth";
-import { authOptions } from '../auth/[...nextauth]/route';
 
 // Initialize the S3 client
 const s3Client = new S3Client({
@@ -47,7 +46,8 @@ export async function POST(req: Request) {
     session.startTransaction();
 
     // Retrieve session data without `res`
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    const typecastedReq = req as any;
+    const token = await getToken({ req: typecastedReq, secret: process.env.NEXTAUTH_SECRET });
     if (!token?.sub) {
       return NextResponse.json({ message: "User not authenticated" }, { status: 401 });
     }
@@ -165,7 +165,8 @@ export async function PATCH(req: Request) {
 
   try {
     // Authenticate user
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    const typecastedReq = req as any;
+    const token = await getToken({ req: typecastedReq, secret: process.env.NEXTAUTH_SECRET });
     if (!token?.sub) {
       return NextResponse.json({ message: "User not authenticated" }, { status: 401 });
     }
@@ -209,7 +210,7 @@ export async function PATCH(req: Request) {
     }
 
     // Handle stock data update if provided
-    const stock = formData.get("stock") ? parseInt(formData.get("stock") as string) : existingProduct.stock;
+    const stock = formData.get("stock") ? parseInt(formData.get("stock") as string) : 0;
     if (stock !== null) {
       await ProductStockModel.findOneAndUpdate(
         { productId },

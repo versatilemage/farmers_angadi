@@ -127,14 +127,14 @@ const IndividualProductView = ({
   return (
     <div className="w-full h-full flex flex-col items-center gap-10 max-w-[1280px] self-center mt-8">
       {/* Main Product Section */}
-      <div className="flex flex-col lg:flex-row w-11/12 sm:w-8/12 lg:w-full h-max bg-white shadow-lg rounded-lg p-6">
-        <div className="w-full h-full flex items-center justify-center border border-slate-300 rounded-lg overflow-hidden lg:w-1/2 mb-6 lg:mb-0">
+      <div className="flex flex-col lg:flex-row w-11/12 sm:w-8/12 lg:w-full h-full bg-white shadow-lg rounded-lg p-6">
+        <div className="w-full max-h-[340px] h-[100%] flex items-center justify-center border border-slate-300 rounded-lg overflow-hidden lg:w-1/2 mb-6 lg:mb-0">
           <Image
             src={productData.image}
             alt={productData.name}
-            width={400}
+            width={800}
             height={400}
-            className="object-contain"
+            className="object-cover"
           />
         </div>
         <div className="flex flex-col items-start w-full h-full bg-slate-100 p-8 relative gap-4 lg:w-1/2 rounded-lg">
@@ -230,12 +230,12 @@ const IndividualProductView = ({
       </div>
 
       {/* Related Products Section */}
-      <div className="w-full max-w-[1280px] mt-8">
+      <div className="w-full max-w-[1280px] my-8">
         <h2 className="text-2xl font-bold mb-4">Related Products</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
           {relatedProducts.map((relatedProduct) => (
             <div
-              className="p-4 bg-white shadow-lg rounded-lg"
+              className="p-4 bg-white shadow-2xl rounded-lg"
               key={relatedProduct._id.toString()}
             >
               <Link href={`/products/${category}/${relatedProduct._id}`}>
@@ -244,7 +244,7 @@ const IndividualProductView = ({
                   alt={relatedProduct.name}
                   width={200}
                   height={200}
-                  className="object-contain w-full"
+                  className="object-cover w-full max-h-[200px]"
                 />
                 <h3 className="mt-4 text-xl font-bold">
                   {relatedProduct.name}

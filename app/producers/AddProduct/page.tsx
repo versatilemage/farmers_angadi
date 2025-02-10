@@ -1,6 +1,6 @@
 "use client";
 import AddProductForm from "@/components/Molecules/AddProduct";
-import CommonNavBar from "@/components/Molecules/NavBar";
+// import CommonNavBar from "@/components/Molecules/NavBar";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -25,7 +25,7 @@ export default function AddProduct() {
   if (session && (session.user.role === "Producers" || session.user.role === "admin")) {
     return (
       <div>
-        <CommonNavBar />
+        {/* <CommonNavBar /> */}
         <AddProductForm /> {/* Producer/Admin content */}
       </div>
     );

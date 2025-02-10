@@ -1,16 +1,17 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react"; // Assuming next-auth is used for auth
+import { useSession } from "next-auth/react";
 import MiniProductCard from "@/components/Atoms/miniProductCard";
 import axios from "axios";
 
 const AllCategoryListed = () => {
-  const { data: session } = useSession(); // Get current session data
-  const currentUserId = session?.user?.id; // Get user ID from session
+  const { data: session } = useSession();
+  const currentUserId = session?.user?.id;
 
   const [productData, setProductData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [uniqueCategories, setUniqueCategories] = useState(["All"]);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -41,7 +42,12 @@ const AllCategoryListed = () => {
     setSelectedCategory(category);
   };
 
-  const categories = ["All", "Fruits", "Vegetables","Value Added Products"];
+  useEffect(() => {
+    if (Array.isArray(productData)) {
+      const uniqueSet = new Set(productData.map((ele) => ele.category));
+      setUniqueCategories(["All", ...Array.from(uniqueSet)]);
+    }
+  }, [productData]);
 
   // Group products by category
   const groupedProducts = productData.reduce((acc, product) => {
@@ -55,7 +61,7 @@ const AllCategoryListed = () => {
     <div className="product-list-container max-w-7xl mx-auto px-4 py-8">
       {/* Category Buttons */}
       <div className="categories-filter flex flex-wrap justify-center gap-4 mb-6">
-        {categories.map((category) => (
+        {uniqueCategories.map((category) => (
           <button
             key={category}
             onClick={() => handleCategoryChange(category)}
@@ -81,34 +87,36 @@ const AllCategoryListed = () => {
       ) : (
         <div className="space-y-8">
           {selectedCategory === "All" || selectedCategory === "" ? (
-            Object.entries(groupedProducts).map(([category, products]) => (
-              <div key={category} className="category-section">
-                <h2 className="text-2xl font-semibold text-primary mb-4 capitalize">
-                  {category}
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                  {products.map((product) => (
-                    <div key={product._id} className="flex flex-col gap-6">
-                       <MiniProductCard
-                    data={product}
-                    isCreator={product.creatorId === currentUserId}
-                    refreshProducts={fetchProducts} // Pass the function
-                  />
-                    </div>
-                  ))}
+            Object.entries(groupedProducts).map(([category, products]) => {
+              const typeCastedProducts = products as unknown as any;
+              return (
+                <div key={category} className="category-section">
+                  <h2 className="text-2xl font-semibold text-primary mb-4 capitalize">
+                    {category}
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {typeCastedProducts.map((product) => (
+                      <div key={product._id} className="flex flex-col gap-6">
+                        <MiniProductCard
+                          data={product}
+                          isCreator={product.creatorId === currentUserId}
+                          refreshProducts={fetchProducts}
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {productData.map((product) => (
                 <div key={product._id} className="flex flex-col gap-6">
-                 <MiniProductCard
+                  <MiniProductCard
                     data={product}
                     isCreator={product.creatorId === currentUserId}
-                    refreshProducts={fetchProducts} // Pass the function
+                    refreshProducts={fetchProducts}
                   />
-          
                 </div>
               ))}
             </div>

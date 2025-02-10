@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import CommonNavBar from "@/components/Molecules/NavBar";
+// import CommonNavBar from "@/components/Molecules/NavBar";
 
 const AddressFormPage = () => {
   const { data: session, status } = useSession();
@@ -141,7 +141,7 @@ const AddressFormPage = () => {
 
   return (
     <>
-      <CommonNavBar />
+      {/* <CommonNavBar /> */}
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 py-10 px-4">
         <div className="w-full max-w-2xl bg-white p-8 rounded-lg shadow-lg">
           <h2 className="text-2xl font-semibold text-gray-800 text-center mb-6">

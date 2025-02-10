@@ -1,15 +1,16 @@
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import bcrypt from "bcrypt";
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import User from "@/models/user";
 import clientPromise from "./clientPromise";
 import connectToDB from "@/utils/Database";
 
-export const authOptions = {
+// Define the NextAuth options
+const authOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(clientPromise),
   session: {
-    strategy: "jwt" as const,  // Explicitly typing the strategy as 'jwt'
+    strategy: "jwt",
     maxAge: 7 * 24 * 60 * 60, // 7 days
   },
   providers: [
@@ -37,7 +38,6 @@ export const authOptions = {
           throw new Error("Invalid password");
         }
 
-        // Return user object, which is encoded in the JWT
         return {
           id: user._id.toString(),
           email: user.email,
@@ -53,7 +53,6 @@ export const authOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
-      
       if (user) {
         token.userId = user.id;
         token.username = user.username;
@@ -64,10 +63,10 @@ export const authOptions = {
     },
     async session({ session, token }) {
       session.user = {
-        id: token.userId,
+        id: token.userId as string,
         email: token.email,
-        role: token.role,
-        username:token.username
+        role: token.role as string,
+        username: token.username as string,
       };
       return session;
     },
@@ -75,5 +74,6 @@ export const authOptions = {
   debug: process.env.NODE_ENV === "development",
 };
 
+// Export handlers for GET and POST
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };

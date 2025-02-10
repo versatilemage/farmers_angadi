@@ -1,13 +1,11 @@
 import mongoose from "mongoose";
 
 const mongoURL: string = process.env.NEXT_PUBLIC_MONGO_ATLAS_URL || "";
-console.log(mongoURL,"lkj");
 
 let isConnected: boolean = false;
 
 const connectMongo = async () => {
   if (isConnected) {
-    console.log("Reusing existing MongoDB connection");
     return;
   }
 

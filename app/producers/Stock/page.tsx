@@ -2,11 +2,22 @@
 
 import { FormEvent, useState, useEffect } from "react";
 
+import { IProduct } from "@/models/product";
+import { ReusableProdModel } from "@/utils/interface";
+
+interface customProductModel extends IProduct {
+  stockData: ReusableProdModel
+}
+
+type state = {
+  data: customProductModel[]
+}
+
 
 const StockMeasurementForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<state>();
   const [selectedProductId, setSelectedProductId] = useState("");
   const [selectedMeasurement, setSelectedMeasurement] = useState("");
 
@@ -15,9 +26,8 @@ const StockMeasurementForm = () => {
     // Fetch product names and IDs to populate the dropdown
     async function fetchProducts() {
       try {
-        const response = await fetch("/api/product/"); // Replace with actual endpoint to get product list
+        const response = await fetch("/api/product"); // Replace with actual endpoint to get product list
         const data = await response.json();
-        console.log(data,"lkj");
         
         setProducts(data || []); // Assuming API returns { products: [...] }
       } catch (error) {
@@ -84,7 +94,7 @@ const StockMeasurementForm = () => {
               -- Select Product --
             </option>
             {products?products?.data?.map((product) => (
-              <option key={product._id} value={product._id}>
+              <option key={product._id as string} value={product._id as string}>
                 {product.name}
               </option>
             )):null}

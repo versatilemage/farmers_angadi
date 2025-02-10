@@ -41,7 +41,7 @@ const SeparateCategory = ({ params }: any) => {
                             grid grid-cols-2 sm:flex sm:flex-wrap place-content-center xl:grid xl:grid-cols-4 gap-6 sm:gap-12 py-12 items-center"
               >
                 {identifier.products.map((i: any) => {
-                  return <MiniProductcard data={i} key={i.name} />;
+                  return <MiniProductcard refreshProducts={() => null} data={i} key={i.name} />;
                 })}
               </div>
             </div>

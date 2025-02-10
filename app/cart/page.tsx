@@ -1,10 +1,10 @@
-import CommonNavBar from "@/components/Molecules/NavBar";
+// import CommonNavBar from "@/components/Molecules/NavBar";
 import CartOrganelles from "@/components/Organelles/Cart";
 
 const CartPage = () => {
     return (
         <>
-        <CommonNavBar />
+        {/* <CommonNavBar /> */}
         <CartOrganelles/>
         </>
     )
