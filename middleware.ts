@@ -3,8 +3,8 @@ import { getToken } from "next-auth/jwt";
 import { JWT } from "next-auth/jwt"; 
 
 const protectedRoutes = {
-  "/producers": ["Producers", "Admin"], 
-  "/admin": ["Admin"], 
+  "/producers": ["Producers", "admin"], 
+  "/admin": ["admin"], 
 };
 
 export async function middleware(request: NextRequest, event: NextFetchEvent) {
