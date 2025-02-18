@@ -42,6 +42,7 @@ const CommonNavBar = () => {
   const clearSearchText = () => setProductname("");
 
   const isUserAuthenticated = useMemo(() => !!selectedUserData?.email, [selectedUserData]);
+  const userRole = useMemo(() => selectedUserData?.role, [selectedUserData]);
 
   useEffect(() => {
     if (isUserAuthenticated) {
@@ -72,6 +73,8 @@ const CommonNavBar = () => {
     setSelectedAddress(address);
     setShowAddressDropdown(false);
   };
+
+  const modifiedNavOptions = navOptions.filter((i) => userRole === "admin" || i.name !== "Admin");
 
   return (
     <nav className="sticky top-0 z-50 bg-primary shadow-lg transition-all duration-300 ease-in-out backdrop-blur-md">
@@ -176,7 +179,7 @@ const CommonNavBar = () => {
 
           {/* Navigation Links */}
           <ul className="flex flex-row items-center gap-8 w-full justify-evenly">
-            {navOptions.map((i) => (
+            {modifiedNavOptions.map((i) => (
               <li key={i.name}>
                 <Link
                   className={`text-lg text-white hover:text-secondary ${pathname === i.link ? "text-secondary" : "text-white"}`}
@@ -252,7 +255,7 @@ const CommonNavBar = () => {
           </div>
 
           <ul className="flex flex-col items-center gap-4 w-full">
-            {navOptions.map((i) => (
+            {modifiedNavOptions.map((i) => (
               <li key={i.name}>
                 <Link href={i.link} className="text-lg text-white hover:text-secondary">
                   {i.name}
