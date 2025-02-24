@@ -90,13 +90,13 @@ const AllCategoryListed = () => {
             Object.entries(groupedProducts).map(([category, products]) => {
               const typeCastedProducts = products as unknown as any;
               return (
-                <div key={category} className="category-section">
-                  <h2 className="text-2xl font-semibold text-primary mb-4 capitalize">
+                <div key={category} className="category-section flex flex-col">
+                  <h2 className="text-2xl font-semibold text-primary mb-4 capitalize p-2">
                     {category}
                   </h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  <div className="flex flex-row w-full lg:grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 overflow-y-scroll">
                     {typeCastedProducts.map((product) => (
-                      <div key={product._id} className="flex flex-col gap-6">
+                      <div key={product._id} className="flex flex-row lg:flex-col gap-6 overflow-x-scroll h-full">
                         <MiniProductCard
                           data={product}
                           isCreator={product.creatorId === currentUserId}

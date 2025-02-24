@@ -15,6 +15,7 @@ export const AuthWrapper = ({ children }) => {
     "/about",
     "/products",
     "/contact",
+    "/cart",
     "/authentication",
     "/forgot-password",
     "/reset-password",

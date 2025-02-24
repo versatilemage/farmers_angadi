@@ -41,10 +41,10 @@ const MiniProductCard = ({
 
       <Link
         href={`/products/${data.category}/${data._id}`}
-        className="min-w-[160px] sm:w-full max-w-[220px] sm:max-w-[300px] max-h-[350px] sm:max-h-[600px] rounded-lg shadow-[0_5px_25px_1px_rgba(0,0,0,0.3)] bg-tertiary relative h-max cursor-pointer"
+        className="min-w-[160px] flex flex-col sm:block sm:w-full max-w-[160px] sm:max-w-[300px] max-h-[250px] h-full sm:max-h-[600px] rounded-lg shadow-[0_5px_25px_1px_rgba(0,0,0,0.3)] bg-tertiary relative cursor-pointer"
       >
         {data.discount > 0 && (
-          <span className="absolute top-3 left-3 bg-red-600 text-white text-sm font-semibold px-3 py-1 rounded-r-lg z-10">
+          <span className="absolute sm:top-3 sm:left-3 bg-red-600 text-white text-sm font-semibold px-3 py-1 rounded-r-lg z-10">
             {discountPercentage}% OFF
           </span>
         )}
@@ -60,14 +60,14 @@ const MiniProductCard = ({
         </div>
 
         <div className="flex flex-col items-start gap-2 p-4 bg-secondary rounded-b-lg">
-          <span className="flex items-center justify-between w-full gap-2">
-            <p className="text-primary text-sm font-medium capitalize w-32 md:w-40 truncate">
+          <span className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full gap-2">
+            <p className="text-primary text-xs sm:text-sm font-medium capitalize w-36 md:w-40 truncate">
               {data.name}
             </p>
-            <p className="text-red-800 p-2 rounded bg-white text-sm font-bold capitalize">{`${stock} ${measurement}`}</p>
+            <p className="text-red-800 sm:p-2 rounded sm:bg-white text-sm font-bold capitalize">{`${stock} ${measurement}`}</p>
           </span>
 
-          <p className="text-xl text-primary font-bold">₹ {finalPrice}</p>
+          <p className="text-sm sm:text-xl text-primary sm:font-bold">₹ {finalPrice} per {measurement}</p>
           {data.discount > 0 && (
             <p className="text-sm text-tertiary line-through">
               ₹ {data.cost.toFixed(2)}

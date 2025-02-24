@@ -1,6 +1,7 @@
 export const navOptions = [
     {
         name: "Home",
+        show: true,
         link: "/",
         icon: (classname) => (
             <svg
@@ -16,6 +17,7 @@ export const navOptions = [
     
     {
         name: "Product",
+        show: true,
         link: "/products",
         icon: (classname) => (
             <svg
@@ -30,6 +32,7 @@ export const navOptions = [
     },
     {
         name: "About",
+        show: true,
         link: "/about",
         icon: (classname) => (
             <svg
@@ -44,6 +47,7 @@ export const navOptions = [
     },
     {
         name: "Contact",
+        show: true,
         link: "/contact",
         icon: (classname) => (
             <svg
@@ -58,6 +62,7 @@ export const navOptions = [
     },
     {
         name: "Admin",
+        show: false,
         link: "/admin/dashboard",
         icon: (classname) => (
             <svg
