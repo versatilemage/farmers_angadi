@@ -28,7 +28,7 @@ const MiniProductCard = ({
   const measurement = data.stockData?.measurement || "Kg";
 
   return (
-    <div className="relative">
+    <div className="relative h-full">
       {/* Edit button that toggles the edit modal */}
       {isCreator && (
         <button

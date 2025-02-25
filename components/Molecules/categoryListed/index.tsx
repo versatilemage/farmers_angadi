@@ -43,7 +43,7 @@ const AllCategoryListed = () => {
   };
 
   useEffect(() => {
-    if (Array.isArray(productData)) {
+    if (Array.isArray(productData) && uniqueCategories.length <= 1) {
       const uniqueSet = new Set(productData.map((ele) => ele.category));
       setUniqueCategories(["All", ...Array.from(uniqueSet)]);
     }
@@ -58,7 +58,7 @@ const AllCategoryListed = () => {
   }, {});
 
   return (
-    <div className="product-list-container max-w-7xl mx-auto px-4 py-8">
+    <div className="product-list-container max-w-7xl py-8">
       {/* Category Buttons */}
       <div className="categories-filter flex flex-wrap justify-center gap-4 mb-6">
         {uniqueCategories.map((category) => (
@@ -85,24 +85,26 @@ const AllCategoryListed = () => {
           No data available
         </div>
       ) : (
-        <div className="space-y-8">
+        <div className="space-y-8 flex flex-col items-start">
           {selectedCategory === "All" || selectedCategory === "" ? (
             Object.entries(groupedProducts).map(([category, products]) => {
               const typeCastedProducts = products as unknown as any;
               return (
-                <div key={category} className="category-section flex flex-col">
+                <div
+                  key={category}
+                  className="category-section flex flex-col items-start w-full"
+                >
                   <h2 className="text-2xl font-semibold text-primary mb-4 capitalize p-2">
                     {category}
                   </h2>
-                  <div className="flex flex-row w-full lg:grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 overflow-y-scroll">
+                  <div className="flex flex-row items-start gap-6 overflow-x-scroll w-full max-w-[100vw]">
                     {typeCastedProducts.map((product) => (
-                      <div key={product._id} className="flex flex-row lg:flex-col gap-6 overflow-x-scroll h-full">
-                        <MiniProductCard
-                          data={product}
-                          isCreator={product.creatorId === currentUserId}
-                          refreshProducts={fetchProducts}
-                        />
-                      </div>
+                      <MiniProductCard
+                        key={product._id}
+                        data={product}
+                        isCreator={product.creatorId === currentUserId}
+                        refreshProducts={fetchProducts}
+                      />
                     ))}
                   </div>
                 </div>

@@ -108,8 +108,13 @@ const AddProductForm = () => {
                 required
               >
                 <option value="">Select Category</option>
-                <option value="Fruits">Fruits</option>
-                <option value="Vegetables">Vegetables</option>
+                <option value="Grocery">Grocery</option>
+                <option value="Snacks">Snacks</option>
+                <option value="Millets">Millets</option>
+                <option value="Seeds">Seeds</option>
+                <option value="Personal Care">Personal Care</option>
+                <option value="Handmade Products">Handmade Products</option>
+                <option value="Traditional Rice">Traditional Rice</option>
                 <option value="Value Added Products">Value Added Products</option>
 
               </select>

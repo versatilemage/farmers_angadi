@@ -100,7 +100,7 @@ const CommonNavBar = () => {
 
   return (
     <nav className="sticky top-0 z-50 bg-primary shadow-lg transition-all duration-300 ease-in-out backdrop-blur-md">
-      <div className="flex flex-row items-center justify-between gap-6 w-full max-w-[1280px] mx-auto px-2 lg:p-0">
+      <div className="flex flex-row items-center justify-between gap-6 w-full max-w-[1280px] mx-auto px-2 py-1 lg:p-0">
         <span className="">
           <CommonApplicationLogo />
         </span>

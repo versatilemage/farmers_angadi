@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
-const EditProductForm = ({ productId, onClose }: { productId: string; onClose: () => void }) => {
+const EditProductForm = ({
+  productId,
+  onClose,
+}: {
+  productId: string;
+  onClose: () => void;
+}) => {
   const [product, setProduct] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -73,15 +79,25 @@ const EditProductForm = ({ productId, onClose }: { productId: string; onClose: (
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-white rounded-xl shadow-lg w-full max-w-md h-[80vh] overflow-hidden relative transition-transform transform-gpu scale-95 hover:scale-100 duration-200 ease-out">
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 text-lg">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 text-lg"
+        >
           ✕
         </button>
 
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">Edit Product</h2>
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
+          Edit Product
+        </h2>
 
-        <form onSubmit={onSubmit} className="px-6 pb-14 overflow-y-auto h-full space-y-4">
+        <form
+          onSubmit={onSubmit}
+          className="px-6 pb-14 overflow-y-auto h-full space-y-4"
+        >
           <div>
-            <label className="block text-sm font-medium text-gray-600">Product Name</label>
+            <label className="block text-sm font-medium text-gray-600">
+              Product Name
+            </label>
             <input
               type="text"
               name="name"
@@ -92,22 +108,31 @@ const EditProductForm = ({ productId, onClose }: { productId: string; onClose: (
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-600">Category</label>
+            <label className="block text-sm font-medium text-gray-600">
+              Category
+            </label>
             <select
               name="category"
               defaultValue={product.category}
               className="border border-gray-300 p-3 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-teal-400"
               required
             >
-              <option value="Fruits">Fruits</option>
-              <option value="Vegetables">Vegetables</option>
+              <option value="Grocery">Grocery</option>
+              <option value="Snacks">Snacks</option>
+              <option value="Millets">Millets</option>
+              <option value="Seeds">Seeds</option>
+              <option value="Personal Care">Personal Care</option>
+              <option value="Handmade Products">Handmade Products</option>
+              <option value="Traditional Rice">Traditional Rice</option>
               <option value="Value Added Products">Value Added Products</option>
             </select>
           </div>
 
           <div className="flex gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-600">Price</label>
+              <label className="block text-sm font-medium text-gray-600">
+                Price
+              </label>
               <input
                 type="number"
                 name="cost"
@@ -118,7 +143,9 @@ const EditProductForm = ({ productId, onClose }: { productId: string; onClose: (
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-600">Discount</label>
+              <label className="block text-sm font-medium text-gray-600">
+                Discount
+              </label>
               <input
                 type="number"
                 name="discount"
@@ -129,10 +156,16 @@ const EditProductForm = ({ productId, onClose }: { productId: string; onClose: (
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-600">Upload Image</label>
+            <label className="block text-sm font-medium text-gray-600">
+              Upload Image
+            </label>
             {previewImage && (
               <div className="mb-4">
-                <img src={previewImage} alt="Product Preview" className="w-24 h-24 object-cover rounded-lg shadow-md" />
+                <img
+                  src={previewImage}
+                  alt="Product Preview"
+                  className="w-24 h-24 object-cover rounded-lg shadow-md"
+                />
               </div>
             )}
             <input
@@ -144,7 +177,9 @@ const EditProductForm = ({ productId, onClose }: { productId: string; onClose: (
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-600">Stock</label>
+            <label className="block text-sm font-medium text-gray-600">
+              Stock
+            </label>
             <input
               type="number"
               name="stock"
@@ -155,7 +190,9 @@ const EditProductForm = ({ productId, onClose }: { productId: string; onClose: (
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-600">Description</label>
+            <label className="block text-sm font-medium text-gray-600">
+              Description
+            </label>
             <textarea
               name="about"
               defaultValue={product.about}
@@ -175,7 +212,11 @@ const EditProductForm = ({ productId, onClose }: { productId: string; onClose: (
               {isSubmitting ? "Updating..." : "Update Product"}
             </button>
 
-            {message && <p className="text-center text-green-600 font-medium mt-4">{message}</p>}
+            {message && (
+              <p className="text-center text-green-600 font-medium mt-4">
+                {message}
+              </p>
+            )}
           </div>
         </form>
       </div>

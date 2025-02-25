@@ -13,7 +13,6 @@ const ListingOfProducts = () => {
   const { selectedUserData } = useAuth() as {
     selectedUserData: IUsersDocument;
   };
-
   return (
     <section className="flex flex-col items-center gap-6">
       <h1 className="text-primary capitalize text-3xl sm:4xl lg:6xl font-semibold">{`Fresh Product's Daily`}</h1>

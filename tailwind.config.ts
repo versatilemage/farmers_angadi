@@ -13,7 +13,7 @@ const config: Config = {
         'gradient-conic':
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
         'farmerbg': "url('/assets/farmerbg.jpg')",
-        'carrotbg': "url('/assets/carrotbg.jpg')",
+        'carrotbg': "url('/assets/paddy.jpg')",
         'buyersbg': "url('/assets/buyersbg.jpg')",
         'sellersbg': "url('/assets/sellersbg.jpg')",
       },
