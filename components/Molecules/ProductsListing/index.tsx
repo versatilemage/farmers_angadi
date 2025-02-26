@@ -19,7 +19,7 @@ const ListingOfProducts = () => {
       <p className="text-primary text-[14px] sm:text-[18px] text-center w-4/6">
         On the other hand we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of
       </p>
-      <div className="flex flex-col gap-4 sm:gap-0 sm:flex-row items-center justify-between w-full px-4 sm:w-4/6 sm:px-0">
+      {/* <div className="flex flex-col gap-4 sm:gap-0 sm:flex-row items-center justify-between w-full px-4 sm:w-4/6 sm:px-0">
       {varietyOfButtons
           .filter((i) => i.text !== "Admin Page" || selectedUserData?.role === "admin") // Filter out "Admin Page" for non-admin users
           .map((i) => (
@@ -31,7 +31,7 @@ const ListingOfProducts = () => {
               {i.text}
             </Link>
           ))}
-      </div>
+      </div> */}
       <AllCategoryListed />
     </section>
   );

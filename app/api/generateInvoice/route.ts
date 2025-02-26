@@ -22,8 +22,8 @@ export async function POST(req: Request) {
         userName,
         paymentId,
         cartItems,
-        deliveryCharge: 80,
-        gstRate: 0.05,
+        deliveryCharge: 60,
+        gstRate: 0,
       },
       fileName: `invoice_${paymentId}.pdf`,
     });
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
           paymentId,
           cartItems: itemsByProducer[producerId].items,
           deliveryCharge: 0,
-          gstRate: 0.05,
+          gstRate: 0,
         },
         fileName: `producer_invoice_${producerId}_${paymentId}.pdf`,
       });

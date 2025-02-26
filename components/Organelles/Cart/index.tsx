@@ -18,7 +18,7 @@ const CartOrganelles = () => {
   const [subtotal, setSubtotal] = useState(0);
   const [gst, setGst] = useState(0);
 
-  const [deliveryCharge, setDeliveryCharge] = useState(80);
+  const [deliveryCharge, setDeliveryCharge] = useState(60);
   const [totalCartAmount, setTotalCartAmount] = useState(0); 
   const [editCard, setEditCard] = useState(false);
   const { selectedAddress } = useAuth();
@@ -34,11 +34,11 @@ const CartOrganelles = () => {
       return acc + itemTotal;
     }, 0);
 
-    const calculatedGst = calculatedSubtotal * 0.05;
-    const calculatedTotal = calculatedSubtotal + deliveryCharge + calculatedGst;
+    // const calculatedGst = calculatedSubtotal * 0.05;
+    const calculatedTotal = calculatedSubtotal + deliveryCharge; //calculatedGst
 
     setSubtotal(calculatedSubtotal);
-    setGst(calculatedGst);
+    // setGst(calculatedGst);
 
     setTotalCartAmount(calculatedTotal);
   }, [cartItems]);
@@ -283,8 +283,8 @@ const CartOrganelles = () => {
         {cartItems.length > 0 && (
           <div className="w-full max-w-[1024px] flex flex-col gap-2">
             <p className="text-lg font-semibold">Subtotal: ₹{subtotal.toFixed(2)}</p>
-            <p className="text-lg font-semibold">GST (5%): ₹{gst.toFixed(2)}</p>
-            <p className="text-lg font-semibold">Delivery Charge: ₹{deliveryCharge.toFixed(2)}</p>
+            {/* <p className="text-lg font-semibold">GST (5%): ₹{gst.toFixed(2)}</p> */}
+            <p className="text-lg font-semibold">Delivery Charge: ₹{deliveryCharge.toFixed(2)} <strong className="text-sm font-normal">{`( May vary depending on your location )`}</strong></p>
             <p className="text-2xl font-bold">Total: ₹{totalCartAmount.toFixed(2)}</p>
           </div>
         )}

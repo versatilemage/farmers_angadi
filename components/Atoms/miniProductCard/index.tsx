@@ -28,7 +28,7 @@ const MiniProductCard = ({
   const measurement = data.stockData?.measurement || "Kg";
 
   return (
-    <div className="relative h-full">
+    <div className="relative h-full flex flex-col">
       {/* Edit button that toggles the edit modal */}
       {isCreator && (
         <button
@@ -41,14 +41,14 @@ const MiniProductCard = ({
 
       <Link
         href={`/products/${data.category}/${data._id}`}
-        className="min-w-[160px] flex flex-col sm:block sm:w-full max-w-[160px] sm:max-w-[300px] max-h-[250px] h-full sm:max-h-[600px] rounded-lg shadow-[0_5px_25px_1px_rgba(0,0,0,0.3)] bg-tertiary relative cursor-pointer"
+        className="min-w-[160px] flex flex-col lg:items-center lg:justify-start sm:w-full max-w-[160px] sm:max-w-[300px] max-h-[250px] sm:max-h-[600px] lg:min-h-[400px] rounded-lg shadow-[0_5px_25px_1px_rgba(0,0,0,0.3)] bg-secondary relative cursor-pointer"
       >
         {data.discount > 0 && (
           <span className="absolute sm:top-3 sm:left-3 bg-red-600 text-white text-sm font-semibold px-3 py-1 rounded-r-lg z-10">
             {discountPercentage}% OFF
           </span>
         )}
-        <div className="relative w-full h-64 overflow-hidden">
+        <div className="relative w-full h-64 overflow-hidden flex">
           <Image
             src={data.image}
             alt={data.name}
