@@ -20,7 +20,7 @@ const SearchedDataListed = ({
     setLoading(true); // Start loading
     try {
       const productData = await axios.get(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/product/search?productName=${productName}`
+        `/api/product/search?productName=${productName}`
       );
 
       const collectedData = productData.data?.data;

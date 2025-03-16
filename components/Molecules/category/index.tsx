@@ -6,7 +6,7 @@ const SeparateCategory = ({ params }: any) => {
   const renderSelectedCategoryProductList = async () => {
     try {
       const productData = await axios.get(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/product?category=${params.category}`
+        `/api/product?category=${params.category}`
       );
       if (productData.data.data) {
         const identifier =

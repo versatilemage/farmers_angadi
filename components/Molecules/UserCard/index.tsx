@@ -9,9 +9,13 @@ import { memo } from "react";
 const UserRoleCard = memo(() => {
   const { selectedUserData } = useAuth();
 
+  const role = (selectedUserData?.role === "admin" ? "Producers": selectedUserData?.role) || "Consumers"
+
+  const handleRoleCardArr = userRoleDetails.filter((ele) => ele.role === role);
+
   return (
     <section className="flex xl:flex-row flex-col w-full max-w-[1280px] items-center justify-center gap-12">
-      {userRoleDetails.map((roleInfo) => {
+      {handleRoleCardArr.map((roleInfo) => {
         const { description, secondaryText, actionText, role, defaultLink } = roleInfo;
 
         // If the user is an Admin, show both Producers and Consumers cards
