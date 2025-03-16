@@ -80,7 +80,7 @@ const LoginForm = () => {
             value={userIdentification}
             name="userIdentification"
             className="w-full h-14 pl-12 pr-4 border rounded-lg focus:ring-2 focus:ring-secondary"
-            placeholder="Enter Email / Username"
+            placeholder="Enter Email"
           />
           <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" className="absolute left-4 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400"
             viewBox="0 0 24 24"><path fill="currentColor" d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2zm-2 0l-8 5l-8-5zm0 12H4V8l8 5l8-5z" /></svg>
