@@ -12,12 +12,13 @@ import { signOut } from "next-auth/react";
 import axios from "axios";
 
 import { CircleUser, ShoppingBasket, Menu } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/Atoms/UI/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/Atoms/UI/sheet";
 
 const CommonNavBar = () => {
   const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement>(null); // Ref to detect outside clicks
   const [showAddressDropdown, setShowAddressDropdown] = useState(false);
+  const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
 
   const router = useRouter();
   const { selectedUserData } = useAuth() as {
@@ -41,7 +42,6 @@ const CommonNavBar = () => {
     return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, [showAddressDropdown]);
 
-  const [isOpen, setIsOpen] = useState(false);
   const [productName, setProductname] = useState("");
   const [userAddresses, setUserAddresses] = useState<any[]>([]);
   const { selectedAddress, setSelectedAddress } = useAuth();
@@ -98,21 +98,21 @@ const CommonNavBar = () => {
   const modifiedNavOptions = modifiedNavOption.filter((i) => i.show === true);
 
   useEffect(() => {
-    setIsOpen(false);
+    setIsSheetOpen(false);
   }, [pathname]);
+
 
   return (
     <nav className="sticky top-0 z-50 bg-primary shadow-lg transition-all duration-300 ease-in-out backdrop-blur-md">
       <div className="flex flex-row items-center justify-start lg:justify-between gap-6 w-full max-w-[1280px] mx-auto px-2 py-0 lg:p-0">
         {/* Mobile Hamburger Menu */}
-        <Sheet>
+        <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
           <SheetTrigger asChild>
             <Menu
               className="block lg:hidden text-white w-8 h-8"
-              onClick={() => setIsOpen(!isOpen)}
             />
           </SheetTrigger>
-          <SheetContent className="bg-gray-600">
+          <SheetContent className="bg-gray-600 left-0">
             <div className="relative" ref={dropdownRef}>
               {isUserAuthenticated && (
                 <div
@@ -185,32 +185,32 @@ const CommonNavBar = () => {
             </div>
             <ul className="flex flex-col items-start gap-4 w-full">
               {modifiedNavOptions.map((i) => (
-                <li key={i.name} className="flex items-center gap-3">
+                <Link href={i.link} key={i.name} className="flex items-center gap-3">
                   {i.icon()}
-                  <Link
-                    href={i.link}
+                  <p
                     className="text-lg text-white hover:text-secondary"
                   >
                     {i.name}
-                  </Link>
-                </li>
-              ))}
-              <li>
-                <Link
-                  href="/cart"
-                  className="text-lg text-white hover:text-secondary flex items-center gap-3"
-                >
-                  <svg
-                    width="1.2em"
-                    height="1.2em"
-                    viewBox="0 0 24 24"
-                    className="bg-secondary rounded-full w-10 h-10 p-2.5 hover:bg-tertiary"
-                  >
-                    <ShoppingBasket className="text-white w-10 h-10" />
-                  </svg>
-                  Cart
+                  </p>
                 </Link>
-              </li>
+              ))}
+              <SheetClose asChild>
+                <Link href="/cart">
+                  <p
+                    className="text-lg text-white hover:text-secondary flex items-center gap-3"
+                  >
+                    <svg
+                      width="1.2em"
+                      height="1.2em"
+                      viewBox="0 0 24 24"
+                      className="bg-secondary rounded-full w-10 h-10 p-2.5 hover:bg-tertiary"
+                    >
+                      <ShoppingBasket className="text-white w-10 h-10" />
+                    </svg>
+                    Cart
+                  </p>
+                </Link>
+              </SheetClose>
               {isUserAuthenticated ? (
                 <li>
                   <button
@@ -280,8 +280,12 @@ const CommonNavBar = () => {
               )}
             </button>
           </div>
-          <CircleUser className="text-white w-10 h-10" />
-          <ShoppingBasket className="text-white w-10 h-10" />
+          <Link className="w-10 h-10 flex items-center justify-center" href={"/authentication"}>
+            <CircleUser className="text-white w-8 h-8" />
+          </Link>
+          <Link className="w-10 h-10 flex items-center justify-center" href={"/cart"}>
+            <ShoppingBasket className="text-white w-8 h-8" />
+          </Link>
         </div>
         {/* Desktop Navigation */}
         <div className="hidden lg:flex flex-row items-center justify-between w-full gap-8">
