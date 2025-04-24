@@ -164,7 +164,7 @@ const CartOrganelles = () => {
               return acc;
             }, {});
             
-            await axios.post("/api/generateInvoice", {
+            const fileData = await axios.post("/api/generateInvoice", {
               userId: session.user.id,
               userName: session.user.username,
               paymentId: paymentResponse.razorpay_payment_id,
@@ -176,9 +176,11 @@ const CartOrganelles = () => {
             await axios.post("/api/sendInvoice", {
               itemsByProducer: cartItems.reduce((acc, item) => {
                 const producerId = item.productDetails.creatorDetails._id;
+                const producerInvoiceUrl = fileData?.data?.producerInvoiceUrls[producerId];
                 if (!acc[producerId]) {
                   acc[producerId] = {
                     producerEmail: item.productDetails.creatorDetails.email,
+                    producerInvoiceUrl,
                     items: [],
                   };
                 }
@@ -188,6 +190,7 @@ const CartOrganelles = () => {
               consumerEmail: session.user.email,
               consumerName: session.user.username,
               paymentId: paymentResponse.razorpay_payment_id,
+              consumerInvoiceUrl: fileData?.data?.consumerInvoiceUrl,
             });
 
             Swal.fire({

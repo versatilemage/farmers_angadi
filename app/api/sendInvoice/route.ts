@@ -3,7 +3,7 @@ import nodemailer from "nodemailer";
 
 export async function POST(req: Request) {
   try {
-    const { itemsByProducer, consumerEmail, consumerName, paymentId, invoiceUrls } = await req.json();
+    const { itemsByProducer, consumerEmail, consumerName, paymentId, consumerInvoiceUrl } = await req.json();
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -14,11 +14,10 @@ export async function POST(req: Request) {
     });
 
     for (const producerId in itemsByProducer) {
-      const { producerEmail } = itemsByProducer[producerId];
+      const { producerEmail, producerInvoiceUrl } = itemsByProducer[producerId];
 
       if (!producerEmail) continue;
-      const invoiceUrl = invoiceUrls[`producer_${producerId}_${paymentId}`];
-
+      const invoiceUrl = producerInvoiceUrl;
       if (!invoiceUrl) continue;
 
       await transporter.sendMail({
@@ -29,8 +28,6 @@ export async function POST(req: Request) {
         attachments: [{ filename: `producer_invoice_${producerId}_${paymentId}.pdf`, path: invoiceUrl }],
       });
     }
-
-    const consumerInvoiceUrl = invoiceUrls[`consumer_${paymentId}`];
 
     if (consumerInvoiceUrl) {
       await transporter.sendMail({
